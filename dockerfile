@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 
 
 RUN rm -rf node_modules
-run cnpm install --force
+run npm install --force
 
 
 
