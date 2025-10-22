@@ -28,7 +28,9 @@ export class WebUIManager {
     }
 
     // 查找可用端口
-    const port = await this.findAvailablePort(options.port || 3002);
+    const port = await this.findAvailablePort(
+      Number(process.env.WEB_UI_PORT || options.port || 3002)
+    );
     const host = options.host || process.env.WEB_UI_HOST || "localhost";
 
     // 启动 Web 服务器
@@ -49,7 +51,7 @@ export class WebUIManager {
         // 打开失败不影响功能，只记录日志
         if (process.env.MCP_DEBUG === "true") {
           process.stderr.write(
-            `[MCP-DEBUG] Failed to open browser: ${error}\n`,
+            `[MCP-DEBUG] Failed to open browser: ${error}\n`
           );
         }
       }
@@ -85,7 +87,7 @@ export class WebUIManager {
       }
     }
     throw new Error(
-      `No available ports found in range ${startPort}-${startPort + 99}`,
+      `No available ports found in range ${startPort}-${startPort + 99}`
     );
   }
 
