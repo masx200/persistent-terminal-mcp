@@ -1,0 +1,127 @@
+name: persistent-terminal-mcp
+
+networks:
+  1panel-network:
+    external: true
+    name: "1panel-network"
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: "172.19.20.0/24"
+        - subnet: "fc01:db8:21::/64"
+
+services:
+  persistent-terminal-mcp:
+    cap_drop:
+      - "CAP_AUDIT_CONTROL"
+      - "CAP_BLOCK_SUSPEND"
+      - "CAP_DAC_READ_SEARCH"
+      - "CAP_IPC_LOCK"
+      - "CAP_IPC_OWNER"
+      - "CAP_LEASE"
+      - "CAP_LINUX_IMMUTABLE"
+      - "CAP_MAC_ADMIN"
+      - "CAP_MAC_OVERRIDE"
+      - "CAP_NET_ADMIN"
+      - "CAP_NET_BROADCAST"
+      - "CAP_SYSLOG"
+      - "CAP_SYS_ADMIN"
+      - "CAP_SYS_BOOT"
+      - "CAP_SYS_MODULE"
+      - "CAP_SYS_NICE"
+      - "CAP_SYS_PACCT"
+      - "CAP_SYS_PTRACE"
+      - "CAP_SYS_RAWIO"
+      - "CAP_SYS_RESOURCE"
+      - "CAP_SYS_TIME"
+      - "CAP_SYS_TTY_CONFIG"
+      - "CAP_WAKE_ALARM"
+
+    command:
+      - "node"
+      - "/root/mcp-streamable-http-bridge/main.js"
+      - "--config"
+      - "/data/settings.json"
+
+    container_name: "persistent-terminal-mcp"
+
+    domainname: "pod.dpanel.local"
+
+    entrypoint:
+      - "docker-entrypoint.sh"
+
+    environment:
+      - "MCP_DEBUG=true"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/server:/root/mcp-streamable-http-bridge:/root/.pnpm-store"
+      - "NODE_VERSION=24.4.1"
+      - "YARN_VERSION=1.22.22"
+      - "AMAP_MAPS_API_KEY=f398fceea52e30c09abe7fc156bd57e0"
+      - "GITHUB_PERSONAL_ACCESS_TOKEN=****************************************"
+
+      - "BRIDGE_API_TOKEN=igh7aj9uu9fivoa0bhcdwk7skcu370bib7jpladfxi8nnujwdo"
+      - "BRIDGE_API_PORT=3000"
+      - "HOME=/root"
+      - "UV_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/"
+      - "REST_PORT=3006"
+      - "AUTO_START_REST_SERVER=true"
+      - "REST_HOST=0.0.0.0"
+      - "AUTO_START_TERMINAL_UI=true"
+      - "WEB_UI_HOST=0.0.0.0"
+      - "WEB_UI_PORT=3007"
+
+    hostname: "067bd83ee98a"
+
+    image: docker.cnb.cool/masx200/docker_mirror/persistent-terminal-mcp:1.2.0
+
+    ipc: "private"
+
+    labels:
+      BuildAuthor: "DPanel"
+      BuildDesc: "DPanel is a docker web management panel"
+      BuildWebSite: "https://dpanel.cc"
+      buildVersion: "1.0.0"
+      com.docker.compose.config-hash: "4cf8834bdb1e5be059066e0ccb99bdf607900ac040843328fbc64474b97ff088"
+      com.docker.compose.container-number: "1"
+      com.docker.compose.depends_on: ""
+      com.docker.compose.image: "sha256:7f99b301271e0ec2246124c55c5fa0adc8993d7101cc0b504d20aed17f624d54"
+      com.docker.compose.oneoff: "False"
+      com.docker.compose.project: "github-mcp"
+      com.docker.compose.project.config_files: "F:/docker/compose/github-mcp.yml"
+      com.docker.compose.project.working_dir: "F:/docker/compose"
+      com.docker.compose.replace: "35cfd8285de690dde16ecbbbf872d1dfd6dfcca1ab8039546b3c9e1476b0f4a7"
+      com.docker.compose.service: "mcp-github-server"
+      com.docker.compose.version: "2.38.2"
+
+    logging:
+      driver: "json-file"
+      options: {}
+
+    networks:
+      - "1panel-network"
+
+    ports:
+      - "35445:3000/tcp"
+      - "35446:3006/tcp"
+      - "35447:3007/tcp"
+
+    privileged: true
+
+    restart: "always"
+
+    security_opt:
+      - "label=disable"
+
+    stdin_open: true
+
+    tty: true
+
+    volumes:
+      - "F:/docker/persistent-terminal-mcp/data/settings.json:/data/settings.json"
+      - "F:/:/mnt/f"
+      - "d:/:/mnt/d"
+
+    working_dir: "/root/persistent-terminal-mcp"
+
+version: "3.6"
+
