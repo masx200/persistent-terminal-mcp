@@ -36,6 +36,9 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libudev-dev \
     && rm -rf /var/lib/apt/lists/*
+
+
+run mkdir -pv     /root/mcp-streamable-http-bridge 
 run cd /root && git clone https://gitee.com/masx200/mcp-demo-streamable-http-bridge && cp -rf /root/mcp-demo-streamable-http-bridge/* /root/mcp-streamable-http-bridge && rm -rf /root/mcp-demo-streamable-http-bridge
 
 run cd /root/mcp-streamable-http-bridge && cnpm install --force && npm run build
