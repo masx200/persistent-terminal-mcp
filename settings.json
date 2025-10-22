@@ -1,0 +1,30 @@
+{
+  "sseServer": {
+    "enabled": true,
+    "endpoint": "/sse",
+    "messageEndpoint": "/messages"
+  },
+  "enableHttpServer": true,
+  "wsServer": {
+    "enabled": true,
+    "pathPrefix": "/ws"
+  },
+  "pathPrefix": "/mcp",
+  "hotReload": true,
+  "apiKey": "igh7aj9uu9fivoa0bhcdwk7skcu370bib7jpladfxi8nnujwdo",
+  "port": 3000,
+  "host": "0.0.0.0",
+  "corsAllowOrigins": ["*"],
+  "mcpServers": {
+    "persistent-terminal": {
+      "command": "node",
+      "args": ["/root/persistent-terminal-mcp/dist/index.js"],
+      "env": {
+        "MAX_BUFFER_SIZE": "10000",
+        "SESSION_TIMEOUT": "86400000",
+        "COMPACT_ANIMATIONS": "true",
+        "ANIMATION_THROTTLE_MS": "100"
+      }
+    }
+  }
+}
