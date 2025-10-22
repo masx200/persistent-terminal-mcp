@@ -349,7 +349,7 @@ AUTO_OPEN_BROWSER=false
 设置上述环境变量后，启动 MCP 服务器时会：
 
 1. ✅ REST API 服务器自动启动在 `http://0.0.0.0:3001`
-2. ✅ Web UI 自动启动在 `http://0.0.0.0:3002`
+2. ✅ Web UI 自动启动在 `http://0.0.0.0:3000`
 3. ✅ 两个服务都可以从外部网络访问
 4. ✅ 可选择是否自动打开浏览器
 
@@ -370,6 +370,7 @@ AUTO_OPEN_BROWSER=false
         "REST_HOST": "0.0.0.0",
         "AUTO_START_TERMINAL_UI": "true",
         "WEB_UI_HOST": "0.0.0.0",
+        "WEB_UI_PORT": "3000",
         "AUTO_OPEN_BROWSER": "false",
         "MAX_BUFFER_SIZE": "10000",
         "SESSION_TIMEOUT": "86400000"
@@ -387,6 +388,7 @@ claude mcp add persistent-terminal \
   --env REST_HOST=0.0.0.0 \
   --env AUTO_START_TERMINAL_UI=true \
   --env WEB_UI_HOST=0.0.0.0 \
+  --env WEB_UI_PORT=3000 \
   --env AUTO_OPEN_BROWSER=false \
   -- npx -y persistent-terminal-mcp
 ```
