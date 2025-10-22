@@ -7,6 +7,7 @@
 ## 📋 概述
 
 Claude Code 支持两种方式配置 MCP 服务器：
+
 1. **CLI 命令方式**（官方推荐，但不够灵活）
 2. **直接编辑配置文件**（更灵活，推荐）
 
@@ -19,16 +20,19 @@ Claude Code 支持两种方式配置 MCP 服务器：
 ```bash
 claude mcp add <server-name> <command> [args...]
 ```
+
 ### 示例：添加 Sequential Thinking
 
 ```bash
 claude mcp add sequential-thinking npx -y @modelcontextprotocol/server-sequential-thinking
 ```
+
 ### 示例：添加 Playwright
 
 ```bash
 claude mcp add playwright npx '@playwright/mcp@latest'
 ```
+
 ### 缺点
 
 - ❌ 输入错误需要重新开始
@@ -43,6 +47,7 @@ claude mcp add playwright npx '@playwright/mcp@latest'
 ### 配置文件位置
 
 #### Linux / WSL
+
 ```bash
 ~/.claude.json
 # 或
@@ -50,6 +55,7 @@ claude mcp add playwright npx '@playwright/mcp@latest'
 ```
 
 #### macOS
+
 ```bash
 ~/.claude.json
 # 或
@@ -57,6 +63,7 @@ claude mcp add playwright npx '@playwright/mcp@latest'
 ```
 
 #### Windows
+
 ```bash
 %USERPROFILE%\.claude.json
 # 或
@@ -129,9 +136,7 @@ find ~ -name ".claude.json" 2>/dev/null
     "persistent-terminal": {
       "type": "stdio",
       "command": "node",
-      "args": [
-        "/Users/admin/Desktop/node-pty/dist/index.js"
-      ],
+      "args": ["/Users/admin/Desktop/node-pty/dist/index.js"],
       "env": {
         "MAX_BUFFER_SIZE": "10000",
         "SESSION_TIMEOUT": "86400000"
@@ -153,9 +158,7 @@ find ~ -name ".claude.json" 2>/dev/null
     "persistent-terminal": {
       "type": "stdio",
       "command": "node",
-      "args": [
-        "/Users/admin/Desktop/node-pty/dist/index.js"
-      ],
+      "args": ["/Users/admin/Desktop/node-pty/dist/index.js"],
       "env": {
         "MAX_BUFFER_SIZE": "10000",
         "SESSION_TIMEOUT": "86400000"
@@ -208,6 +211,7 @@ vim ~/.claude.json
 ```
 
 **注意：**
+
 - 确保路径是绝对路径
 - 使用你实际的项目路径
 - JSON 格式要正确（注意逗号）
@@ -248,9 +252,7 @@ claude
     "persistent-terminal": {
       "type": "stdio",
       "command": "node",
-      "args": [
-        "/Users/admin/Desktop/node-pty/dist/index.js"
-      ],
+      "args": ["/Users/admin/Desktop/node-pty/dist/index.js"],
       "env": {
         "MAX_BUFFER_SIZE": "10000",
         "SESSION_TIMEOUT": "86400000"
@@ -259,10 +261,7 @@ claude
     "sequential-thinking": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     },
     "filesystem": {
       "type": "stdio",
@@ -284,6 +283,7 @@ claude
 ### 问题 1: MCP 服务器未连接
 
 **症状：**
+
 ```
 ✗ persistent-terminal: disconnected
 ```
@@ -291,16 +291,19 @@ claude
 **解决方案：**
 
 1. **检查路径是否正确**
+
    ```bash
    ls -la /Users/admin/Desktop/node-pty/dist/index.js
    ```
 
 2. **检查文件是否可执行**
+
    ```bash
    node /Users/admin/Desktop/node-pty/dist/index.js
    ```
 
 3. **查看详细错误信息**
+
    ```bash
    claude --mcp-debug
    ```
@@ -328,12 +331,14 @@ echo '{
 **解决方案：**
 
 1. **完全退出 Claude Code**
+
    ```bash
    # 确保所有 Claude Code 进程都已关闭
    ps aux | grep claude
    ```
 
 2. **重新启动**
+
    ```bash
    claude
    ```
@@ -346,6 +351,7 @@ echo '{
 ### 问题 4: 权限问题
 
 **症状：**
+
 ```
 Error: EACCES: permission denied
 ```
@@ -373,6 +379,7 @@ chmod +x /Users/admin/Desktop/node-pty/dist/index.js
 ```
 
 应该看到 6 个工具：
+
 - create_terminal
 - write_terminal
 - read_terminal
@@ -387,6 +394,7 @@ chmod +x /Users/admin/Desktop/node-pty/dist/index.js
 ```
 
 Claude Code 应该能够：
+
 1. 调用 create_terminal 创建终端
 2. 调用 write_terminal 发送命令
 3. 调用 read_terminal 读取输出
@@ -408,6 +416,7 @@ Claude Code 应该能够：
 ```
 
 **优点：**
+
 - 所有项目都可以使用
 - 只需配置一次
 
@@ -428,6 +437,7 @@ Claude Code 应该能够：
 ```
 
 **优点：**
+
 - 可以为不同项目使用不同配置
 - 更细粒度的控制
 
@@ -446,7 +456,7 @@ Claude Code 应该能够：
 
 - **含义：** 会话超时时间（毫秒）
 - **默认值：** 86400000（24 小时）
-- **建议值：** 
+- **建议值：**
   - 短期任务：3600000（1 小时）
   - 长期任务：86400000（24 小时）
   - 永久保持：0（不超时，不推荐）
@@ -465,10 +475,7 @@ Claude Code 应该能够：
     "persistent-terminal": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "persistent-terminal-mcp"
-      ]
+      "args": ["-y", "persistent-terminal-mcp"]
     }
   }
 }
@@ -482,19 +489,14 @@ Claude Code 应该能够：
     "persistent-terminal": {
       "type": "stdio",
       "command": "cmd",
-      "args": [
-        "/c",
-        "npx",
-        "-y",
-        "persistent-terminal-mcp"
-      ]
+      "args": ["/c", "npx", "-y", "persistent-terminal-mcp"]
     }
   }
 }
 ```
 
 > **提示**：若已全局安装 `persistent-terminal-mcp`，可将 `command`
->（或在 Windows 中将 `args`）修改为直接调用可执行文件，并删除 `-y` 参数。
+> （或在 Windows 中将 `args`）修改为直接调用可执行文件，并删除 `-y` 参数。
 
 ### 完整配置
 
@@ -506,10 +508,7 @@ Claude Code 应该能够：
     "persistent-terminal": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "persistent-terminal-mcp"
-      ],
+      "args": ["-y", "persistent-terminal-mcp"],
       "env": {
         "MAX_BUFFER_SIZE": "10000",
         "SESSION_TIMEOUT": "86400000"
@@ -527,12 +526,7 @@ Claude Code 应该能够：
     "persistent-terminal": {
       "type": "stdio",
       "command": "cmd",
-      "args": [
-        "/c",
-        "npx",
-        "-y",
-        "persistent-terminal-mcp"
-      ],
+      "args": ["/c", "npx", "-y", "persistent-terminal-mcp"],
       "env": {
         "MAX_BUFFER_SIZE": "10000",
         "SESSION_TIMEOUT": "86400000"

@@ -5,8 +5,10 @@
 我已经为你创建了 3 个文档：
 
 ### 1. **docs/meta/project-prompt.md** ⭐ 主提示词
+
 **用途：** 这是最重要的文档，包含完整的项目需求
 **内容：**
+
 - 项目概述
 - 核心需求（5 大功能）
 - REST API 设计（7 个端点）
@@ -19,8 +21,10 @@
 - 使用示例
 
 ### 2. **docs/reference/technical-details.md** 🔧 技术细节
+
 **用途：** 补充技术实现细节
 **内容：**
+
 - node-pty 使用示例
 - 循环缓冲区实现
 - 智能截断实现
@@ -30,6 +34,7 @@
 - 完整的代码示例
 
 ### 3. **如何使用提示词.md** 📖 使用指南
+
 **用途：** 告诉你如何使用这些文档（就是本文档）
 
 ---
@@ -58,6 +63,7 @@
 ```
 
 **优点：**
+
 - AI 能看到完整的上下文
 - 减少来回沟通
 - 实现更准确
@@ -71,6 +77,7 @@
 **步骤：**
 
 **第 1 步：发送主需求**
+
 ```
 我需要你帮我开发一个持久终端管理系统。请先阅读这份需求文档：
 
@@ -82,6 +89,7 @@
 **第 2 步：等待 AI 回复并确认理解**
 
 **第 3 步：发送技术细节**
+
 ```
 很好！现在请阅读这份技术实现细节文档，它包含了关键代码示例：
 
@@ -168,6 +176,7 @@
 ```
 
 **正确答案：**
+
 1. 自动添加 `\n` 使其变成 `"pwd\n"` 并执行
 2. 需要从 ptyProcesses、outputBuffers、sessions 三个 Map 中删除
 3. 显示开头 N 行 + 结尾 N 行，中间省略
@@ -179,25 +188,30 @@
 ## 🎯 不同 AI 的使用建议
 
 ### Claude (Anthropic)
+
 - ✅ 支持长上下文，可以一次性发送所有文档
 - ✅ 理解能力强，通常能准确实现需求
 - 💡 建议：直接使用方式 1
 
 ### ChatGPT (OpenAI)
+
 - ✅ GPT-4 支持长上下文
 - ⚠️ GPT-3.5 上下文较短，建议分步发送
 - 💡 建议：GPT-4 用方式 1，GPT-3.5 用方式 2
 
 ### Cursor / Windsurf
+
 - ✅ 支持文件上传
 - ✅ 可以直接在项目中工作
 - 💡 建议：使用方式 3，上传文档文件
 
 ### Codex CLI
+
 - ⚠️ 上下文可能有限
 - 💡 建议：使用方式 2，分步发送
 
 ### Gemini (Google)
+
 - ✅ 支持超长上下文
 - 💡 建议：使用方式 1
 
@@ -208,6 +222,7 @@
 在 AI 完成项目后，检查以下内容：
 
 ### 功能检查
+
 - [ ] 可以创建终端会话
 - [ ] 发送 `"pwd"` 会自动执行（不需要 `\n`）
 - [ ] 可以读取终端输出
@@ -219,6 +234,7 @@
 - [ ] 会话超时自动清理
 
 ### 代码质量检查
+
 - [ ] 使用 TypeScript
 - [ ] 有完整的类型定义
 - [ ] 有错误处理
@@ -226,12 +242,14 @@
 - [ ] 代码结构清晰
 
 ### 文档检查
+
 - [ ] 有 README.md
 - [ ] 有 API 文档
 - [ ] 有使用示例
 - [ ] 有部署说明
 
 ### 测试检查
+
 - [ ] 有测试文件
 - [ ] 测试覆盖主要功能
 - [ ] 测试可以运行
@@ -243,12 +261,13 @@
 ### Q1: AI 创建的代码命令不会自动执行怎么办？
 
 **回复：**
+
 ```
 我发现命令不会自动执行。请检查 writeToTerminal 方法，
 确保实现了自动添加换行符的逻辑：
 
-const inputToWrite = input.endsWith('\n') || input.endsWith('\r') 
-  ? input 
+const inputToWrite = input.endsWith('\n') || input.endsWith('\r')
+  ? input
   : input + '\n';
 ptyProcess.write(inputToWrite);
 ```
@@ -258,6 +277,7 @@ ptyProcess.write(inputToWrite);
 ### Q2: AI 创建的代码 kill 后终端仍在列表中怎么办？
 
 **回复：**
+
 ```
 我发现 kill 终端后它仍然在列表中。请检查 killTerminal 方法，
 确保在 kill 后删除了所有资源：
@@ -272,6 +292,7 @@ this.sessions.delete(terminalId);
 ### Q3: AI 没有实现某个功能怎么办？
 
 **回复：**
+
 ```
 我注意到你没有实现 [具体功能]。
 
@@ -286,6 +307,7 @@ this.sessions.delete(terminalId);
 ### Q4: AI 的实现和需求不一致怎么办？
 
 **回复：**
+
 ```
 你的实现和需求文档不一致。
 
@@ -302,6 +324,7 @@ this.sessions.delete(terminalId);
 ### 让 AI 更好理解的技巧
 
 1. **强调关键点**
+
    ```
    特别注意以下两点：
    1. 命令必须自动添加换行符
@@ -309,6 +332,7 @@ this.sessions.delete(terminalId);
    ```
 
 2. **提供示例**
+
    ```
    例如，用户发送 "pwd" 时，系统应该自动转换为 "pwd\n" 并执行。
    ```
@@ -326,12 +350,14 @@ this.sessions.delete(terminalId);
 当 AI 完成项目后，你应该能够：
 
 1. **启动服务器**
+
    ```bash
    npm install
    npm run dev
    ```
 
 2. **创建终端**
+
    ```bash
    curl -X POST http://localhost:3001/api/terminals \
      -H "Content-Type: application/json" \
@@ -339,6 +365,7 @@ this.sessions.delete(terminalId);
    ```
 
 3. **发送命令（不需要 \n）**
+
    ```bash
    curl -X POST http://localhost:3001/api/terminals/[ID]/input \
      -H "Content-Type: application/json" \
@@ -346,6 +373,7 @@ this.sessions.delete(terminalId);
    ```
 
 4. **读取输出**
+
    ```bash
    curl http://localhost:3001/api/terminals/[ID]/output
    ```

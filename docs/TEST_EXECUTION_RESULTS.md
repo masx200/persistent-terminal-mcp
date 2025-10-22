@@ -41,6 +41,7 @@ Ran all test suites.
 ### 1️⃣ Create Result - 终端创建
 
 **返回结果**：
+
 ```javascript
 {
   content: [
@@ -66,6 +67,7 @@ Ran all test suites.
 ```
 
 **验证**：
+
 - ✅ **成功返回终端 ID**: `58be7447-f0ec-44a0-a897-d2e110a53473`
 - ✅ PID、Shell、工作目录、状态信息完整
 
@@ -76,6 +78,7 @@ Ran all test suites.
 #### 第一次读取（pwd 命令）
 
 **输出**：
+
 ```
 Terminal Output (58be7447-f0ec-44a0-a897-d2e110a53473):
 
@@ -91,6 +94,7 @@ Next Read Cursor: 10
 ```
 
 **验证**：
+
 - ✅ **命令回显可见**：清晰显示输入的 `pwd` 命令
 - ✅ **执行结果可见**：正确显示工作目录路径
 
@@ -99,6 +103,7 @@ Next Read Cursor: 10
 #### 第二次读取（ls 命令）
 
 **输出**：
+
 ```
 Terminal Output (58be7447-f0ec-44a0-a897-d2e110a53473):
 
@@ -120,6 +125,7 @@ Statistics:
 ```
 
 **验证**：
+
 - ✅ **历史命令保留**：仍可看到之前的 `pwd` 命令和输出
 - ✅ **统计信息准确**：字节数、Token 数、行数统计正确
 
@@ -138,6 +144,7 @@ Status:
 ```
 
 **验证**：
+
 - ✅ **Running**: true（终端运行中）
 - ✅ **Prompt Visible**: false（提示符状态正确）
 - ✅ **Pending Command**: pwd（当前命令跟踪正确）
@@ -156,6 +163,7 @@ Status:
 ```
 
 **验证**：
+
 - ✅ **Pending Command 更新**：从 `pwd` 正确更新为 `ls`
 - ✅ **Last Activity 更新**：时间戳从 45.214Z 更新到 45.650Z
 - ✅ **状态一致性**：Running 和 Prompt Visible 保持正确状态
@@ -177,6 +185,7 @@ Status: Active
 ```
 
 **验证**：
+
 - ✅ 统计数据准确
 - ✅ 缓冲区管理正常
 
@@ -187,11 +196,13 @@ Status: Active
 **操作**：调用 `kill_terminal`
 
 **结果**：
+
 ```
 List after kill: No active terminal sessions found.
 ```
 
 **验证**：
+
 - ✅ 终端成功终止
 - ✅ 资源正确释放
 - ✅ 无内存泄漏
@@ -202,20 +213,20 @@ List after kill: No active terminal sessions found.
 
 ### 测试通过情况
 
-| 测试项 | 状态 | 说明 |
-|--------|------|------|
-| Jest 单元测试 | ✅ 通过 | 34/34 测试通过，无告警 |
-| 终端创建 | ✅ 通过 | 成功返回 ID 和完整信息 |
-| 命令回显 | ✅ 通过 | 清晰可见输入的命令 |
-| 执行结果 | ✅ 通过 | 正确显示命令输出 |
-| Running 状态 | ✅ 通过 | 准确反映终端运行状态 |
-| Prompt Visible | ✅ 通过 | 正确识别提示符状态 |
+| 测试项          | 状态    | 说明                   |
+| --------------- | ------- | ---------------------- |
+| Jest 单元测试   | ✅ 通过 | 34/34 测试通过，无告警 |
+| 终端创建        | ✅ 通过 | 成功返回 ID 和完整信息 |
+| 命令回显        | ✅ 通过 | 清晰可见输入的命令     |
+| 执行结果        | ✅ 通过 | 正确显示命令输出       |
+| Running 状态    | ✅ 通过 | 准确反映终端运行状态   |
+| Prompt Visible  | ✅ 通过 | 正确识别提示符状态     |
 | Pending Command | ✅ 通过 | 准确跟踪当前执行的命令 |
-| Last Command | ✅ 通过 | 正确记录最后执行的命令 |
-| 时间戳更新 | ✅ 通过 | Last Activity 准确更新 |
-| 历史输出保留 | ✅ 通过 | 之前的命令和输出可查看 |
-| 统计信息 | ✅ 通过 | 字节数、Token 数准确 |
-| 资源清理 | ✅ 通过 | 终端正确终止，无泄漏 |
+| Last Command    | ✅ 通过 | 正确记录最后执行的命令 |
+| 时间戳更新      | ✅ 通过 | Last Activity 准确更新 |
+| 历史输出保留    | ✅ 通过 | 之前的命令和输出可查看 |
+| 统计信息        | ✅ 通过 | 字节数、Token 数准确   |
+| 资源清理        | ✅ 通过 | 终端正确终止，无泄漏   |
 
 ---
 
@@ -242,4 +253,3 @@ List after kill: No active terminal sessions found.
 
 **报告生成时间**: 2025-10-06  
 **文档版本**: 1.0
-

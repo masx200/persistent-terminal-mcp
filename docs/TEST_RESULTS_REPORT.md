@@ -18,6 +18,7 @@
 ## 🧪 测试 1: Jest 异步句柄检测
 
 ### 执行命令
+
 ```bash
 npm test -- --detectOpenHandles
 ```
@@ -25,12 +26,14 @@ npm test -- --detectOpenHandles
 ### 执行结果
 
 #### ✅ 测试通过情况
+
 - **测试套件**: 2 passed, 2 total
 - **测试用例**: 34 passed, 34 total
 - **执行时间**: 24.523 秒
 - **快照测试**: 0 total
 
 #### 测试文件详情
+
 1. ✅ `src/__tests__/terminal-manager.test.ts` - PASS (16.942s)
 2. ✅ `src/__tests__/spinner-detection.test.ts` - PASS
 
@@ -43,11 +46,13 @@ Jest 检测到 **1 个未关闭的异步句柄**，可能导致 Jest 无法正�
 **句柄类型**: `PIPEWRAP`
 
 **问题位置**:
+
 ```
 src/terminal-manager.ts:77:31
 ```
 
 **相关代码**:
+
 ```typescript
 75 |
 76 |       // 创建 PTY 进程
@@ -59,6 +64,7 @@ src/terminal-manager.ts:77:31
 ```
 
 **完整堆栈跟踪**:
+
 ```
 at new PipeSocket (node_modules/node-pty/src/unixTerminal.ts:316:20)
 at new UnixTerminal (node_modules/node-pty/src/unixTerminal.ts:116:20)
@@ -69,15 +75,18 @@ at Object.<anonymous> (src/__tests__/terminal-manager.test.ts:49:42)
 
 ### 🔍 问题分析
 
-**根本原因**: 
+**根本原因**:
+
 - PTY 进程在测试结束后没有被正确清理
 - PIPE 句柄保持打开状态，阻止 Jest 正常退出
 
 **影响范围**:
+
 - 测试功能正常，所有断言都通过
 - 但测试进程无法优雅退出，需要强制终止
 
 **建议修复方案**:
+
 1. 在测试文件中添加 `afterEach` 钩子，确保每个测试后清理 PTY 进程
 2. 在 `TerminalManager` 中添加 `cleanup()` 或 `dispose()` 方法
 3. 确保所有创建的终端在测试结束时调用 `kill()` 方法
@@ -87,6 +96,7 @@ at Object.<anonymous> (src/__tests__/terminal-manager.test.ts:49:42)
 ## 🧪 测试 2: 端到端功能验证
 
 ### 执行命令
+
 ```bash
 node scripts/test-persistent-terminal.mjs
 ```
@@ -96,18 +106,20 @@ node scripts/test-persistent-terminal.mjs
 ### 详细测试流程
 
 #### 1️⃣ 工具列表获取
+
 ```javascript
 Tools: [
-  'create_terminal',
-  'create_terminal_basic',
-  'write_terminal',
-  'read_terminal',
-  'list_terminals',
-  'kill_terminal',
-  'get_terminal_stats',
-  'wait_for_output'
-]
+  "create_terminal",
+  "create_terminal_basic",
+  "write_terminal",
+  "read_terminal",
+  "list_terminals",
+  "kill_terminal",
+  "get_terminal_stats",
+  "wait_for_output",
+];
 ```
+
 ✅ 成功获取 8 个可用工具
 
 ---
@@ -115,6 +127,7 @@ Tools: [
 #### 2️⃣ 创建终端 (Create Result)
 
 **返回结果**:
+
 ```javascript
 {
   content: [
@@ -140,6 +153,7 @@ Tools: [
 ```
 
 **验证点**:
+
 - ✅ Terminal ID 正确生成: `eec022ac-b980-4703-9712-93d921901b97`
 - ✅ PID 正确分配: `63533`
 - ✅ Shell 正确设置: `/bin/zsh`
@@ -153,6 +167,7 @@ Tools: [
 **写入命令**: `pwd`
 
 **读取输出**:
+
 ```
 Terminal Output (eec022ac-b980-4703-9712-93d921901b97):
 
@@ -174,9 +189,10 @@ Status:
 ```
 
 **验证点**:
+
 - ✅ **命令回显可见**: 可以看到输入的 `pwd` 命令
 - ✅ **命令输出正确**: 显示正确的工作目录路径
-- ✅ **状态跟踪正常**: 
+- ✅ **状态跟踪正常**:
   - Running: true (终端运行中)
   - Pending Command: pwd (正确识别当前命令)
   - 命令开始时间: 2025-10-06T10:08:19.400Z
@@ -190,6 +206,7 @@ Status:
 **写入命令**: `ls`
 
 **读取输出**:
+
 ```
 Terminal Output (eec022ac-b980-4703-9712-93d921901b97):
 
@@ -216,10 +233,11 @@ Status:
 ```
 
 **验证点**:
+
 - ✅ **历史命令保留**: 仍可看到之前的 `pwd` 命令和输出
 - ✅ **Pending Command 更新**: 从 `pwd` 更新为 `ls`
 - ✅ **时间戳更新**: Last Activity 从 19.628Z 更新到 19.931Z
-- ✅ **统计信息准确**: 
+- ✅ **统计信息准确**:
   - Total Bytes: 41
   - Estimated Tokens: 11
   - Lines Shown: 5
@@ -229,6 +247,7 @@ Status:
 #### 5️⃣ 获取终端统计信息
 
 **输出**:
+
 ```
 Stats: Terminal Statistics (eec022ac-b980-4703-9712-93d921901b97):
 
@@ -242,6 +261,7 @@ Status: Active
 ```
 
 **验证点**:
+
 - ✅ 统计数据准确
 - ✅ 缓冲区管理正常
 - ✅ 状态显示为 Active
@@ -253,11 +273,13 @@ Status: Active
 **操作**: 调用 `kill_terminal`
 
 **验证**:
+
 ```
 List after kill: No active terminal sessions found.
 ```
 
 **验证点**:
+
 - ✅ 终端成功终止
 - ✅ 终端列表已清空
 - ✅ 资源正确释放
@@ -268,23 +290,23 @@ List after kill: No active terminal sessions found.
 
 ### ✅ 功能验证通过项
 
-| 功能项 | 状态 | 说明 |
-|--------|------|------|
-| 命令回显 | ✅ 通过 | 可以清晰看到输入的命令 |
-| 命令输出 | ✅ 通过 | 命令执行结果正确显示 |
-| Pending Command 跟踪 | ✅ 通过 | 正确识别和更新当前执行的命令 |
-| Last Activity 时间戳 | ✅ 通过 | 准确记录最后活动时间 |
-| 状态信息 | ✅ 通过 | Running、Prompt Visible 等状态正确 |
-| 历史输出保留 | ✅ 通过 | 之前的命令和输出可以查看 |
-| 统计信息 | ✅ 通过 | 字节数、Token 数、行数统计准确 |
-| 终端清理 | ✅ 通过 | 资源正确释放，无泄漏 |
+| 功能项               | 状态    | 说明                               |
+| -------------------- | ------- | ---------------------------------- |
+| 命令回显             | ✅ 通过 | 可以清晰看到输入的命令             |
+| 命令输出             | ✅ 通过 | 命令执行结果正确显示               |
+| Pending Command 跟踪 | ✅ 通过 | 正确识别和更新当前执行的命令       |
+| Last Activity 时间戳 | ✅ 通过 | 准确记录最后活动时间               |
+| 状态信息             | ✅ 通过 | Running、Prompt Visible 等状态正确 |
+| 历史输出保留         | ✅ 通过 | 之前的命令和输出可以查看           |
+| 统计信息             | ✅ 通过 | 字节数、Token 数、行数统计准确     |
+| 终端清理             | ✅ 通过 | 资源正确释放，无泄漏               |
 
 ### ⚠️ 需要改进项
 
-| 问题 | 严重程度 | 影响范围 | 建议优先级 |
-|------|----------|----------|------------|
-| Jest 测试后 PTY 进程未清理 | 中等 | 测试环境 | 高 |
-| PIPEWRAP 句柄泄漏 | 中等 | 测试执行 | 高 |
+| 问题                       | 严重程度 | 影响范围 | 建议优先级 |
+| -------------------------- | -------- | -------- | ---------- |
+| Jest 测试后 PTY 进程未清理 | 中等     | 测试环境 | 高         |
+| PIPEWRAP 句柄泄漏          | 中等     | 测试执行 | 高         |
 
 ---
 
@@ -305,11 +327,13 @@ List after kill: No active terminal sessions found.
 ### 建议后续行动
 
 #### 高优先级
+
 1. 修复 `src/__tests__/terminal-manager.test.ts` 中的资源清理问题
 2. 添加 `afterEach` 钩子确保每个测试后清理 PTY 进程
 3. 在 `TerminalManager` 中实现 `dispose()` 方法
 
 #### 中优先级
+
 4. 考虑添加超时机制，防止测试挂起
 5. 增加更多边界情况的测试覆盖
 
@@ -318,6 +342,7 @@ List after kill: No active terminal sessions found.
 ## 📝 附录：完整测试输出
 
 ### 测试 1 完整输出
+
 ```
 > persistent-terminal-mcp@1.0.1 test
 > jest --detectOpenHandles
@@ -350,10 +375,10 @@ Jest has detected the following 1 open handle potentially keeping Jest from exit
 ```
 
 ### 测试 2 完整输出
+
 详见上文各测试步骤的详细输出。
 
 ---
 
 **报告生成时间**: 2025-10-06  
 **文档版本**: 1.0
-

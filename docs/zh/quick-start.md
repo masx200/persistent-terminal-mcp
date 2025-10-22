@@ -29,9 +29,11 @@
 ## 📁 你需要的文件
 
 ### 主文件（必须）
+
 - **docs/meta/project-prompt.md** - 完整的项目需求（发给 AI）
 
 ### 补充文件（可选）
+
 - **docs/reference/technical-details.md** - 技术实现细节（如果 AI 需要更多细节）
 - **docs/zh/prompt-usage.md** - 详细的使用指南（给你看的）
 - **docs/zh/quick-start.md** - 本文档（快速参考）
@@ -68,6 +70,7 @@
 ```
 
 **正确答案：**
+
 1. 自动添加 `\n` 变成 `"pwd\n"` 并执行
 2. 从 ptyProcesses、outputBuffers、sessions 三个 Map 中删除
 
@@ -123,11 +126,12 @@ curl http://localhost:3001/api/terminals/xxx/output
 ### 问题 1: 命令不执行
 
 **告诉 AI：**
+
 ```
 命令不会自动执行。请在 writeToTerminal 方法中添加：
 
-const inputToWrite = input.endsWith('\n') || input.endsWith('\r') 
-  ? input 
+const inputToWrite = input.endsWith('\n') || input.endsWith('\r')
+  ? input
   : input + '\n';
 ptyProcess.write(inputToWrite);
 ```
@@ -135,6 +139,7 @@ ptyProcess.write(inputToWrite);
 ### 问题 2: kill 后终端仍在列表
 
 **告诉 AI：**
+
 ```
 kill 后终端仍在列表中。请在 killTerminal 方法中添加：
 
@@ -158,6 +163,7 @@ this.sessions.delete(terminalId);
 ## 📞 需要更多帮助？
 
 查看这些文档：
+
 - **如何使用提示词.md** - 详细的使用指南
 - **docs/reference/technical-details.md** - 技术实现细节
 

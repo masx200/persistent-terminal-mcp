@@ -15,6 +15,7 @@
 ### 1. 核心功能
 
 #### MCP 工具：`open_terminal_ui`
+
 - ✅ 启动 Web 服务器
 - ✅ 自动打开浏览器
 - ✅ 动态端口分配（3002-3101）
@@ -22,6 +23,7 @@
 - ✅ 跨平台浏览器打开（macOS/Windows/Linux）
 
 #### 端口冲突解决
+
 - ✅ 自动检测端口可用性
 - ✅ 支持多个 AI 实例同时运行
 - ✅ 每个实例独立端口
@@ -30,6 +32,7 @@
 ### 2. 前端界面
 
 #### 终端列表页面 (`/`)
+
 - ✅ 显示所有终端卡片
 - ✅ 实时统计信息（总数、活跃数）
 - ✅ 终端详细信息（ID、PID、Shell、CWD、状态）
@@ -39,6 +42,7 @@
 - ✅ 复制终端 ID
 
 #### 终端详情页面 (`/terminal/:id`)
+
 - ✅ xterm.js 终端渲染
 - ✅ ANSI 颜色支持
 - ✅ 实时输出显示
@@ -51,6 +55,7 @@
 ### 3. 实时通信
 
 #### WebSocket 推送
+
 - ✅ 终端输出实时推送
 - ✅ 终端状态变化通知
 - ✅ 终端创建/终止事件
@@ -74,6 +79,7 @@
 ### 新增文件（9 个）
 
 #### 后端文件（2 个）
+
 1. `src/web-ui-manager.ts` - Web UI 管理器
    - 端口管理
    - 浏览器打开
@@ -86,6 +92,7 @@
    - 静态文件服务
 
 #### 前端文件（5 个）
+
 3. `public/index.html` - 终端列表页面
 4. `public/terminal.html` - 终端详情页面
 5. `public/app.js` - 列表页面逻辑
@@ -93,6 +100,7 @@
 7. `public/styles.css` - VS Code 风格样式
 
 #### 文档文件（2 个）
+
 8. `docs/features/WEB_UI_FEATURE.md` - 需求文档
 9. `docs/guides/WEB_UI_USAGE.md` - 使用指南
 
@@ -118,6 +126,7 @@
    - 添加 `open_terminal_ui` 工具
 
 ### 测试文件（1 个）
+
 5. `src/examples/test-web-ui.ts` - Web UI 测试脚本
 
 ---
@@ -125,12 +134,14 @@
 ## 🔧 技术栈
 
 ### 后端
+
 - **TypeScript** - 类型安全
 - **Express** - Web 服务器
 - **ws** - WebSocket 库
 - **node-pty** - 终端模拟（复用现有）
 
 ### 前端
+
 - **原生 HTML/CSS/JavaScript** - 无构建步骤
 - **xterm.js** - 终端渲染（CDN）
 - **WebSocket API** - 实时通信
@@ -140,16 +151,19 @@
 ## 📊 测试结果
 
 ### 编译测试
+
 ```bash
 ✅ npm run build - 编译成功
 ```
 
 ### 功能测试
+
 ```bash
 ✅ npm run test:webui - 测试通过
 ```
 
 **测试输出**：
+
 ```
 ✅ Web UI started successfully!
 📊 Details:
@@ -160,12 +174,14 @@
 ```
 
 ### API 测试
+
 ```bash
 ✅ curl http://localhost:3002/api/terminals
    返回: {"terminals":[...]} - 2 个终端
 ```
 
 ### 前端测试
+
 ```bash
 ✅ curl http://localhost:3002/
    返回: index.html 页面
@@ -176,26 +192,31 @@
 ## 🎯 设计亮点
 
 ### 1. 零破坏性修改
+
 - ✅ 只修改了 1 个现有文件的核心逻辑（mcp-server.ts）
 - ✅ 所有修改都是添加性的，不影响现有功能
 - ✅ 新功能完全可选，不调用就不启动
 
 ### 2. 动态端口分配
+
 - ✅ 自动避免端口冲突
 - ✅ 支持多个 MCP 实例同时运行
 - ✅ 每个实例独立管理自己的终端
 
 ### 3. 跨平台支持
+
 - ✅ macOS: `open` 命令
 - ✅ Windows: `start` 命令
 - ✅ Linux: `xdg-open` 命令
 
 ### 4. 实时性
+
 - ✅ WebSocket 推送，无需轮询
 - ✅ 自动重连机制
 - ✅ 多客户端广播
 
 ### 5. 用户体验
+
 - ✅ VS Code 风格暗色主题
 - ✅ 响应式设计
 - ✅ 友好的错误提示
@@ -223,22 +244,25 @@
 ## 📝 使用方法
 
 ### 方法 1: MCP 工具（推荐）
+
 ```
 在 Claude 中说：请打开终端管理界面
 ```
 
 ### 方法 2: 测试脚本
+
 ```bash
 npm run test:webui
 ```
 
 ### 方法 3: 代码调用
+
 ```typescript
 const webUiManager = new WebUIManager();
 await webUiManager.start({
   port: 3002,
   autoOpen: true,
-  terminalManager
+  terminalManager,
 });
 ```
 
@@ -256,18 +280,21 @@ await webUiManager.start({
 ## 🚀 未来改进方向
 
 ### 短期
+
 - [ ] 添加搜索/过滤功能
 - [ ] 添加批量操作（全部终止等）
 - [ ] 添加终端输出下载功能
 - [ ] 添加快捷键支持
 
 ### 中期
+
 - [ ] 添加终端分组功能
 - [ ] 添加主题切换（亮色/暗色）
 - [ ] 添加终端输出搜索
 - [ ] 添加性能监控
 
 ### 长期
+
 - [ ] 支持多标签页管理
 - [ ] 支持终端会话保存/恢复
 - [ ] 支持远程访问（带认证）
@@ -288,6 +315,7 @@ await webUiManager.start({
 Web UI 功能已成功实现并通过测试，为 Persistent Terminal MCP Server 提供了强大的可视化管理能力。
 
 **关键成就**：
+
 - ✅ 零破坏性修改，不影响现有功能
 - ✅ 完整的 MVP 功能实现
 - ✅ 良好的用户体验
@@ -296,16 +324,17 @@ Web UI 功能已成功实现并通过测试，为 Persistent Terminal MCP Server
 - ✅ 完善的文档
 
 **代码质量**：
+
 - ✅ TypeScript 类型安全
 - ✅ 模块化设计
 - ✅ 错误处理完善
 - ✅ 代码注释清晰
 
 **测试覆盖**：
+
 - ✅ 编译测试通过
 - ✅ 功能测试通过
 - ✅ API 测试通过
 - ✅ 前端测试通过
 
 项目已准备好投入使用！🚀
-

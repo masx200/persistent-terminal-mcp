@@ -8,10 +8,10 @@
 **测试日期：** 2025-10-03  
 **发现问题：** 2 个
 
-| 问题 | 严重程度 | 状态 |
-|------|---------|------|
-| 命令不会自动执行 | 🔴 严重 | ✅ 已修复 |
-| kill 后终端仍在列表 | 🟡 中等 | ✅ 已修复 |
+| 问题                | 严重程度 | 状态      |
+| ------------------- | -------- | --------- |
+| 命令不会自动执行    | 🔴 严重  | ✅ 已修复 |
+| kill 后终端仍在列表 | 🟡 中等  | ✅ 已修复 |
 
 ### Codex CLI 测试报告
 
@@ -19,9 +19,9 @@
 **测试日期：** 2025-10-03  
 **发现问题：** 1 个
 
-| 问题 | 严重程度 | 状态 |
-|------|---------|------|
-| 找不到 create_terminal 工具 | 🟡 中等 | ⚠️ 配置问题 |
+| 问题                        | 严重程度 | 状态        |
+| --------------------------- | -------- | ----------- |
+| 找不到 create_terminal 工具 | 🟡 中等  | ⚠️ 配置问题 |
 
 ---
 
@@ -30,50 +30,55 @@
 ### 修复 1: 命令自动执行
 
 #### 问题描述
+
 Claude Code 报告：发送到终端的命令只是显示在终端中，但不会被执行。
 
 #### 根本原因
+
 ```typescript
 // 旧代码
-ptyProcess.write(input);  // 直接写入，没有换行符
+ptyProcess.write(input); // 直接写入，没有换行符
 ```
 
 用户发送 `"pwd"` 时，终端只是显示 `pwd` 但不执行，因为缺少换行符。
 
 #### 修复方案
+
 ```typescript
 // 新代码
-const inputToWrite = input.endsWith('\n') || input.endsWith('\r') 
-  ? input 
-  : input + '\n';
+const inputToWrite =
+  input.endsWith("\n") || input.endsWith("\r") ? input : input + "\n";
 ptyProcess.write(inputToWrite);
 ```
 
 #### 用户体验改进
 
 **之前：**
+
 ```json
 {
   "name": "write_terminal",
   "arguments": {
     "terminalId": "xxx",
-    "input": "npm start\n"  // 必须手动添加 \n
+    "input": "npm start\n" // 必须手动添加 \n
   }
 }
 ```
 
 **现在：**
+
 ```json
 {
   "name": "write_terminal",
   "arguments": {
     "terminalId": "xxx",
-    "input": "npm start"  // 自动添加 \n
+    "input": "npm start" // 自动添加 \n
   }
 }
 ```
 
 #### 测试结果
+
 ```
 ✅ 测试 1.1: 发送 "pwd" (不带换行符) - 命令自动执行
 ✅ 测试 1.2: 发送 "echo test\n" (带换行符) - 正常工作
@@ -85,22 +90,25 @@ ptyProcess.write(inputToWrite);
 ### 修复 2: 终端清理
 
 #### 问题描述
+
 Claude Code 报告：kill_terminal 执行后，终端状态显示为 "terminated"，但在 list_terminals 中该终端仍然显示。
 
 #### 根本原因
+
 ```typescript
 // 旧代码
 ptyProcess.kill(signal);
-session.status = 'terminated';  // 只修改状态
+session.status = "terminated"; // 只修改状态
 // 没有从 Map 中删除
 ```
 
 #### 修复方案
+
 ```typescript
 // 新代码
 ptyProcess.kill(signal);
-session.status = 'terminated';
-this.emit('terminalKilled', terminalId, signal);
+session.status = "terminated";
+this.emit("terminalKilled", terminalId, signal);
 
 // 清理资源
 this.ptyProcesses.delete(terminalId);
@@ -109,6 +117,7 @@ this.sessions.delete(terminalId);
 ```
 
 #### 测试结果
+
 ```
 📋 Kill 前: 2 个终端
 🔪 Kill 第 1 个终端
@@ -121,9 +130,11 @@ this.sessions.delete(terminalId);
 ### Codex CLI 问题分析
 
 #### 问题描述
+
 Codex CLI 报告：所有操作都返回 "Terminal 1 not found"，找不到 create_terminal 工具。
 
 #### 分析结果
+
 这不是代码问题，而是 **MCP 配置问题**。
 
 #### 可能原因
@@ -143,12 +154,14 @@ Codex CLI 报告：所有操作都返回 "Terminal 1 not found"，找不到 crea
 #### 解决方案
 
 **步骤 1: 检查配置**
+
 ```bash
 # 查找 Codex CLI 配置文件
 find ~ -name "*codex*config*" 2>/dev/null
 ```
 
 **步骤 2: 添加 MCP 配置**
+
 ```json
 {
   "mcpServers": {
@@ -165,10 +178,11 @@ find ~ -name "*codex*config*" 2>/dev/null
 ```
 
 **步骤 3: 正确使用流程**
+
 ```javascript
 // 1. 先创建终端
 const result = await create_terminal({ cwd: "/path" });
-const terminalId = result.terminalId;  // 获取实际 ID
+const terminalId = result.terminalId; // 获取实际 ID
 
 // 2. 使用实际 ID 进行操作
 await write_terminal({ terminalId, input: "pwd" });
@@ -180,7 +194,9 @@ await read_terminal({ terminalId });
 ## 📁 创建的文档
 
 ### 1. docs/reference/bug-fixes.md
+
 **内容：** 详细的技术修复报告
+
 - 问题分析
 - 修复方案
 - 代码对比
@@ -189,7 +205,9 @@ await read_terminal({ terminalId });
 - 部署步骤
 
 ### 2. docs/reference/test-response.md
+
 **内容：** 给 AI 测试团队的回复
+
 - 问题确认
 - 修复说明
 - 使用指南
@@ -197,17 +215,22 @@ await read_terminal({ terminalId });
 - 配置检查
 
 ### 3. CHANGELOG.md
+
 **内容：** 版本变更日志
+
 - 1.0.1 版本的修复内容
 - 1.0.0 版本的初始功能
 - 升级指南
 - 未来计划
 
 ### 4. 测试反馈总结.md (本文档)
+
 **内容：** 测试反馈的中文总结
 
 ### 5. src/examples/test-fixes.ts
+
 **内容：** 自动化测试脚本
+
 - 测试命令自动执行
 - 测试终端清理
 - 完整的测试流程
@@ -217,17 +240,20 @@ await read_terminal({ terminalId });
 ## 🚀 部署步骤
 
 ### 1. 重新构建
+
 ```bash
 cd /Users/admin/Desktop/node-pty
 npm run build
 ```
 
 ### 2. 运行测试验证
+
 ```bash
 npm run test:fixes
 ```
 
 应该看到：
+
 ```
 ✅ 测试 1.1 通过: 命令自动执行了！
 ✅ 测试 1.2 通过: 带换行符的命令也正常工作！
@@ -242,6 +268,7 @@ npm run test:fixes
 配置文件位置：`~/.claude.json`
 
 确保配置正确：
+
 ```json
 {
   "mcpServers": {
@@ -259,6 +286,7 @@ npm run test:fixes
 ```
 
 ### 4. 重启 Claude Code
+
 ```bash
 # 完全退出 Claude Code
 # 重新启动
@@ -266,6 +294,7 @@ claude
 ```
 
 ### 5. 验证修复
+
 ```bash
 # 在 Claude Code 中
 /mcp
@@ -281,19 +310,19 @@ claude
 
 ### 命令执行
 
-| 场景 | 修复前 | 修复后 |
-|------|--------|--------|
-| 发送 "pwd" | ❌ 不执行 | ✅ 自动执行 |
-| 发送 "pwd\n" | ✅ 执行 | ✅ 执行（不重复） |
-| 用户体验 | 😞 需要记住加 \n | 😊 自然使用 |
+| 场景         | 修复前           | 修复后            |
+| ------------ | ---------------- | ----------------- |
+| 发送 "pwd"   | ❌ 不执行        | ✅ 自动执行       |
+| 发送 "pwd\n" | ✅ 执行          | ✅ 执行（不重复） |
+| 用户体验     | 😞 需要记住加 \n | 😊 自然使用       |
 
 ### 终端清理
 
-| 操作 | 修复前 | 修复后 |
-|------|--------|--------|
-| kill 终端 | 状态变 terminated | 完全移除 |
-| list_terminals | 显示已终止的终端 | 只显示活跃终端 |
-| 内存使用 | 逐渐增加（泄漏） | 正常释放 |
+| 操作           | 修复前            | 修复后         |
+| -------------- | ----------------- | -------------- |
+| kill 终端      | 状态变 terminated | 完全移除       |
+| list_terminals | 显示已终止的终端  | 只显示活跃终端 |
+| 内存使用       | 逐渐增加（泄漏）  | 正常释放       |
 
 ---
 
@@ -331,6 +360,7 @@ claude
 ### 如果 Claude Code 仍有问题
 
 请提供：
+
 1. `/mcp` 命令的输出
 2. 具体的错误信息
 3. 你发送的命令内容
@@ -338,6 +368,7 @@ claude
 ### 如果 Codex CLI 仍有问题
 
 请提供：
+
 1. 配置文件的完整内容
 2. "列出所有 MCP 工具" 的结果
 3. 具体的调用代码和错误信息

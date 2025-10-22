@@ -7,9 +7,11 @@
 ## MCP 工具列表
 
 ### 1. create_terminal
+
 创建新的持久终端会话
 
 **参数：**
+
 - `shell` (可选): 使用的 shell，默认系统默认
 - `cwd` (可选): 工作目录，默认当前目录
 - `env` (可选): 环境变量对象
@@ -17,24 +19,30 @@
 - `rows` (可选): 终端行数，默认 24
 
 **返回：**
+
 - `terminalId`: 唯一的终端会话 ID
 - `pid`: 进程 ID
 - `status`: 会话状态
 
 ### 2. write_terminal
+
 向终端发送输入
 
 **参数：**
+
 - `terminalId`: 终端会话 ID
 - `input`: 要发送的输入内容
 
 **返回：**
+
 - 成功消息
 
 ### 3. read_terminal
+
 读取终端输出（支持智能截断）
 
 **参数：**
+
 - `terminalId`: 终端会话 ID
 - `since` (可选): 从第几行开始读取，默认 0
 - `maxLines` (可选): 最大读取行数，默认 1000
@@ -47,6 +55,7 @@
 - `tailLines` (可选): 尾部显示行数，默认 50
 
 **返回：**
+
 - `output`: 终端输出内容
 - `totalLines`: 总行数
 - `hasMore`: 是否还有更多输出
@@ -55,12 +64,15 @@
 - `stats` (可选): 统计信息
 
 ### 4. get_terminal_stats
+
 获取终端统计信息
 
 **参数：**
+
 - `terminalId`: 终端会话 ID
 
 **返回：**
+
 - `totalLines`: 总行数
 - `totalBytes`: 总字节数
 - `estimatedTokens`: 估算的 token 数量
@@ -70,11 +82,13 @@
 - `isActive`: 是否活跃
 
 ### 5. list_terminals
+
 列出所有活跃的终端会话
 
 **参数：** 无
 
 **返回：**
+
 - `terminals`: 终端会话列表
   - `id`: 终端 ID
   - `pid`: 进程 ID
@@ -84,13 +98,16 @@
   - `lastActivityAt`: 最后活动时间
 
 ### 6. kill_terminal
+
 终止终端会话
 
 **参数：**
+
 - `terminalId`: 终端会话 ID
 - `signal` (可选): 发送的信号，默认 SIGTERM
 
 **返回：**
+
 - 成功消息
 
 ## MCP 配置文件
@@ -100,11 +117,13 @@
 在 Claude Desktop 中使用，需要配置 `claude_desktop_config.json`：
 
 **macOS 位置：**
+
 ```
 ~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
 **Windows 位置：**
+
 ```
 %APPDATA%\Claude\claude_desktop_config.json
 ```
@@ -180,6 +199,7 @@ npm run test:tools
 ```
 
 **测试结果：**
+
 ```
 ✓ Test 1: create_terminal
 ✓ Test 2: write_terminal
@@ -205,6 +225,7 @@ Total: 11
 ### 基本工作流程
 
 1. **创建终端**
+
 ```json
 {
   "name": "create_terminal",
@@ -215,6 +236,7 @@ Total: 11
 ```
 
 2. **发送命令**
+
 ```json
 {
   "name": "write_terminal",
@@ -226,6 +248,7 @@ Total: 11
 ```
 
 3. **检查统计信息**
+
 ```json
 {
   "name": "get_terminal_stats",
@@ -236,6 +259,7 @@ Total: 11
 ```
 
 4. **智能读取输出**
+
 ```json
 {
   "name": "read_terminal",
@@ -249,6 +273,7 @@ Total: 11
 ```
 
 5. **列出所有终端**
+
 ```json
 {
   "name": "list_terminals",
@@ -257,6 +282,7 @@ Total: 11
 ```
 
 6. **终止终端**
+
 ```json
 {
   "name": "kill_terminal",
@@ -298,6 +324,7 @@ Total: 11
 ### 问题：MCP 服务器无法启动
 
 **解决方案：**
+
 1. 确保已构建项目：`npm run build`
 2. 检查路径是否正确
 3. 查看 Claude Desktop 日志
@@ -305,6 +332,7 @@ Total: 11
 ### 问题：终端输出为空
 
 **解决方案：**
+
 1. 等待命令执行完成
 2. 使用 `get_terminal_stats` 检查是否有输出
 3. 检查命令是否正确执行
@@ -312,6 +340,7 @@ Total: 11
 ### 问题：输出被截断
 
 **解决方案：**
+
 1. 这是正常的智能截断功能
 2. 使用 `mode: "full"` 获取完整输出
 3. 或调整 `headLines` 和 `tailLines` 参数

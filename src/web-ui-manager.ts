@@ -1,7 +1,7 @@
-import { WebUIServer } from './web-ui-server.js';
-import { WebUIStartOptions, WebUIStartResult } from './types.js';
-import { exec } from 'child_process';
-import { createServer } from 'net';
+import { WebUIServer } from "./web-ui-server.js";
+import { WebUIStartOptions, WebUIStartResult } from "./types.js";
+import { exec } from "child_process";
+import { createServer } from "net";
 
 /**
  * Web UI 管理器
@@ -17,23 +17,27 @@ export class WebUIManager {
   async start(options: WebUIStartOptions): Promise<WebUIStartResult> {
     // 如果已经启动，返回现有信息
     if (this.server && this.currentPort) {
+      const host = options.host || process.env.WEB_UI_HOST || "localhost";
+      const displayHost = host === "0.0.0.0" ? "localhost" : host;
       return {
-        url: `http://localhost:${this.currentPort}`,
+        url: `http://${displayHost}:${this.currentPort}`,
         port: this.currentPort,
-        mode: 'existing',
-        autoOpened: false
+        mode: "existing",
+        autoOpened: false,
       };
     }
 
     // 查找可用端口
     const port = await this.findAvailablePort(options.port || 3002);
+    const host = options.host || process.env.WEB_UI_HOST || "localhost";
 
     // 启动 Web 服务器
     this.server = new WebUIServer(options.terminalManager);
-    await this.server.start(port);
+    await this.server.start(port, host);
     this.currentPort = port;
 
-    const url = `http://localhost:${port}`;
+    const displayHost = host === "0.0.0.0" ? "localhost" : host;
+    const url = `http://${displayHost}:${port}`;
 
     // 自动打开浏览器
     let autoOpened = false;
@@ -43,8 +47,10 @@ export class WebUIManager {
         autoOpened = true;
       } catch (error) {
         // 打开失败不影响功能，只记录日志
-        if (process.env.MCP_DEBUG === 'true') {
-          process.stderr.write(`[MCP-DEBUG] Failed to open browser: ${error}\n`);
+        if (process.env.MCP_DEBUG === "true") {
+          process.stderr.write(
+            `[MCP-DEBUG] Failed to open browser: ${error}\n`,
+          );
         }
       }
     }
@@ -52,8 +58,8 @@ export class WebUIManager {
     return {
       url,
       port,
-      mode: 'new',
-      autoOpened
+      mode: "new",
+      autoOpened,
     };
   }
 
@@ -78,7 +84,9 @@ export class WebUIManager {
         return port;
       }
     }
-    throw new Error(`No available ports found in range ${startPort}-${startPort + 99}`);
+    throw new Error(
+      `No available ports found in range ${startPort}-${startPort + 99}`,
+    );
   }
 
   /**
@@ -88,20 +96,20 @@ export class WebUIManager {
     return new Promise((resolve) => {
       const server = createServer();
 
-      server.once('error', (err: any) => {
-        if (err.code === 'EADDRINUSE') {
+      server.once("error", (err: any) => {
+        if (err.code === "EADDRINUSE") {
           resolve(false);
         } else {
           resolve(false);
         }
       });
 
-      server.once('listening', () => {
+      server.once("listening", () => {
         server.close();
         resolve(true);
       });
 
-      server.listen(port, '127.0.0.1');
+      server.listen(port, "127.0.0.1");
     });
   }
 
@@ -112,7 +120,7 @@ export class WebUIManager {
     const commands: Record<string, string> = {
       darwin: `open "${url}"`,
       win32: `start "" "${url}"`,
-      linux: `xdg-open "${url}"`
+      linux: `xdg-open "${url}"`,
     };
 
     const command = commands[process.platform as keyof typeof commands];
@@ -136,11 +144,14 @@ export class WebUIManager {
    * 获取当前状态
    */
   getStatus(): { running: boolean; port: number | null; url: string | null } {
+    const host = process.env.WEB_UI_HOST || "localhost";
+    const displayHost = host === "0.0.0.0" ? "localhost" : host;
     return {
       running: this.server !== null,
       port: this.currentPort,
-      url: this.currentPort ? `http://localhost:${this.currentPort}` : null
+      url: this.currentPort
+        ? `http://${displayHost}:${this.currentPort}`
+        : null,
     };
   }
 }
-

@@ -5,6 +5,7 @@
 在 Cursor AI 编程工具中使用此 MCP 服务器时出现以下问题：
 
 1. **JSON 解析错误**
+
    ```
    [error] Client error for command Unexpected token 'T', "Terminal c"... is not valid JSON
    ```
@@ -32,7 +33,7 @@
 ```typescript
 // ❌ 错误的做法
 console.log(`Terminal created: ${terminalId}`);
-console.error('Error:', error);
+console.error("Error:", error);
 ```
 
 ## 修复方案
@@ -41,7 +42,7 @@ console.error('Error:', error);
 
 ```typescript
 // ✅ 正确的做法
-if (process.env.MCP_DEBUG === 'true') {
+if (process.env.MCP_DEBUG === "true") {
   process.stderr.write(`[MCP-DEBUG] Terminal created: ${terminalId}\n`);
 }
 ```
@@ -60,11 +61,11 @@ MCP_DEBUG=true node dist/index.js
 
 ### 3. 修复的文件
 
-| 文件 | 修复内容 |
-|------|---------|
-| `src/index.ts` | 修改 log 函数、错误处理、异常捕获 |
-| `src/mcp-server.ts` | 修改事件处理器、shutdown 方法 |
-| `src/terminal-manager.ts` | 修改清理日志、shutdown 日志 |
+| 文件                      | 修复内容                          |
+| ------------------------- | --------------------------------- |
+| `src/index.ts`            | 修改 log 函数、错误处理、异常捕获 |
+| `src/mcp-server.ts`       | 修改事件处理器、shutdown 方法     |
+| `src/terminal-manager.ts` | 修改清理日志、shutdown 日志       |
 
 ## 测试验证
 
@@ -75,6 +76,7 @@ node test-mcp-stdio.mjs
 ```
 
 **结果：**
+
 ```
 ✅ 测试通过！stdout 通道纯净，只有 JSON-RPC 消息
 收到的 JSON-RPC 消息数量: 2
@@ -88,6 +90,7 @@ node test-cursor-scenario.mjs
 ```
 
 **结果：**
+
 ```
 ✅ 所有测试通过！MCP 服务器工作正常，stdout 通道纯净
 通过: 7
@@ -96,6 +99,7 @@ node test-cursor-scenario.mjs
 ```
 
 测试覆盖：
+
 - ✅ 初始化连接
 - ✅ 列出工具
 - ✅ 创建终端
@@ -190,4 +194,3 @@ npm run build
 4. ✅ 保持完全向后兼容
 
 **修复已完成，可以在 Cursor 中正常使用了！** 🎉
-

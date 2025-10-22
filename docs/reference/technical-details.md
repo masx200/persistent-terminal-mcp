@@ -11,14 +11,14 @@
 ### 创建终端
 
 ```typescript
-import * as pty from 'node-pty';
+import * as pty from "node-pty";
 
 const ptyProcess = pty.spawn(shell, [], {
-  name: 'xterm-color',
+  name: "xterm-color",
   cols: 80,
   rows: 24,
   cwd: workingDirectory,
-  env: environmentVariables
+  env: environmentVariables,
 });
 
 // 监听输出
@@ -38,9 +38,8 @@ ptyProcess.onExit(({ exitCode, signal }) => {
 ```typescript
 // 自动添加换行符
 function writeToTerminal(input: string) {
-  const inputToWrite = input.endsWith('\n') || input.endsWith('\r') 
-    ? input 
-    : input + '\n';
+  const inputToWrite =
+    input.endsWith("\n") || input.endsWith("\r") ? input : input + "\n";
   ptyProcess.write(inputToWrite);
 }
 ```
@@ -48,7 +47,7 @@ function writeToTerminal(input: string) {
 ### 终止进程
 
 ```typescript
-function killTerminal(signal: string = 'SIGTERM') {
+function killTerminal(signal: string = "SIGTERM") {
   ptyProcess.kill(signal);
   // 清理资源
   ptyProcesses.delete(terminalId);
@@ -80,14 +79,14 @@ class OutputBuffer {
   }
 
   append(data: string): void {
-    const lines = data.split('\n');
+    const lines = data.split("\n");
     for (const line of lines) {
       if (line.length === 0) continue;
-      
+
       this.buffer.push({
         lineNumber: this.currentLine++,
         timestamp: new Date(),
-        content: line
+        content: line,
       });
 
       // 循环缓冲：超过最大大小时删除最旧的
@@ -98,19 +97,21 @@ class OutputBuffer {
   }
 
   read(since: number = 0): OutputEntry[] {
-    return this.buffer.filter(entry => entry.lineNumber >= since);
+    return this.buffer.filter((entry) => entry.lineNumber >= since);
   }
 
   getStats() {
-    const totalBytes = this.buffer.reduce((sum, entry) => 
-      sum + entry.content.length, 0);
-    
+    const totalBytes = this.buffer.reduce(
+      (sum, entry) => sum + entry.content.length,
+      0,
+    );
+
     return {
       totalLines: this.buffer.length,
       totalBytes,
       estimatedTokens: Math.ceil(totalBytes / 4),
       oldestLine: this.buffer[0]?.lineNumber || 0,
-      newestLine: this.buffer[this.buffer.length - 1]?.lineNumber || 0
+      newestLine: this.buffer[this.buffer.length - 1]?.lineNumber || 0,
     };
   }
 }
@@ -123,7 +124,7 @@ class OutputBuffer {
 ```typescript
 interface SmartReadOptions {
   since?: number;
-  mode?: 'full' | 'head' | 'tail' | 'head-tail';
+  mode?: "full" | "head" | "tail" | "head-tail";
   headLines?: number;
   tailLines?: number;
   maxLines?: number;
@@ -132,15 +133,15 @@ interface SmartReadOptions {
 function smartRead(options: SmartReadOptions) {
   const {
     since = 0,
-    mode = 'full',
+    mode = "full",
     headLines = 50,
     tailLines = 50,
-    maxLines = 1000
+    maxLines = 1000,
   } = options;
 
   // 获取原始数据
-  let entries = this.buffer.filter(e => e.lineNumber >= since);
-  
+  let entries = this.buffer.filter((e) => e.lineNumber >= since);
+
   // 限制最大行数
   if (entries.length > maxLines) {
     entries = entries.slice(-maxLines);
@@ -151,7 +152,7 @@ function smartRead(options: SmartReadOptions) {
   let linesOmitted = 0;
 
   switch (mode) {
-    case 'head':
+    case "head":
       if (entries.length > headLines) {
         result = entries.slice(0, headLines);
         truncated = true;
@@ -161,7 +162,7 @@ function smartRead(options: SmartReadOptions) {
       }
       break;
 
-    case 'tail':
+    case "tail":
       if (entries.length > tailLines) {
         result = entries.slice(-tailLines);
         truncated = true;
@@ -171,7 +172,7 @@ function smartRead(options: SmartReadOptions) {
       }
       break;
 
-    case 'head-tail':
+    case "head-tail":
       if (entries.length > headLines + tailLines) {
         const head = entries.slice(0, headLines);
         const tail = entries.slice(-tailLines);
@@ -188,12 +189,18 @@ function smartRead(options: SmartReadOptions) {
   }
 
   // 格式化输出
-  let output = result.map(e => e.content).join('\n');
-  
+  let output = result.map((e) => e.content).join("\n");
+
   // 如果截断了，添加提示
-  if (truncated && mode === 'head-tail') {
-    const head = result.slice(0, headLines).map(e => e.content).join('\n');
-    const tail = result.slice(-tailLines).map(e => e.content).join('\n');
+  if (truncated && mode === "head-tail") {
+    const head = result
+      .slice(0, headLines)
+      .map((e) => e.content)
+      .join("\n");
+    const tail = result
+      .slice(-tailLines)
+      .map((e) => e.content)
+      .join("\n");
     output = `${head}\n\n... [省略 ${linesOmitted} 行] ...\n\n${tail}`;
   }
 
@@ -207,8 +214,8 @@ function smartRead(options: SmartReadOptions) {
       totalBytes: output.length,
       estimatedTokens: Math.ceil(output.length / 4),
       linesShown: result.length,
-      linesOmitted
-    }
+      linesOmitted,
+    },
   };
 }
 ```
@@ -221,17 +228,17 @@ function smartRead(options: SmartReadOptions) {
 
 ```typescript
 // src/routes/terminals.ts
-import { Router } from 'express';
-import * as terminalController from '../controllers/terminalController';
+import { Router } from "express";
+import * as terminalController from "../controllers/terminalController";
 
 const router = Router();
 
-router.post('/terminals', terminalController.createTerminal);
-router.post('/terminals/:terminalId/input', terminalController.writeInput);
-router.get('/terminals/:terminalId/output', terminalController.readOutput);
-router.get('/terminals/:terminalId/stats', terminalController.getStats);
-router.get('/terminals', terminalController.listTerminals);
-router.delete('/terminals/:terminalId', terminalController.killTerminal);
+router.post("/terminals", terminalController.createTerminal);
+router.post("/terminals/:terminalId/input", terminalController.writeInput);
+router.get("/terminals/:terminalId/output", terminalController.readOutput);
+router.get("/terminals/:terminalId/stats", terminalController.getStats);
+router.get("/terminals", terminalController.listTerminals);
+router.delete("/terminals/:terminalId", terminalController.killTerminal);
 
 export default router;
 ```
@@ -240,32 +247,32 @@ export default router;
 
 ```typescript
 // src/controllers/terminalController.ts
-import { Request, Response } from 'express';
-import { terminalManager } from '../services/terminalManager';
+import { Request, Response } from "express";
+import { terminalManager } from "../services/terminalManager";
 
 export async function createTerminal(req: Request, res: Response) {
   try {
     const { shell, cwd, env, cols, rows } = req.body;
-    
+
     const terminal = await terminalManager.createTerminal({
       shell,
       cwd,
       env,
       cols,
-      rows
+      rows,
     });
 
     res.json({
       success: true,
-      data: terminal
+      data: terminal,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       error: {
-        code: 'CREATE_FAILED',
-        message: error.message
-      }
+        code: "CREATE_FAILED",
+        message: error.message,
+      },
     });
   }
 }
@@ -279,9 +286,9 @@ export async function writeInput(req: Request, res: Response) {
       return res.status(400).json({
         success: false,
         error: {
-          code: 'INVALID_INPUT',
-          message: 'Input is required'
-        }
+          code: "INVALID_INPUT",
+          message: "Input is required",
+        },
       });
     }
 
@@ -289,25 +296,25 @@ export async function writeInput(req: Request, res: Response) {
 
     res.json({
       success: true,
-      message: 'Input sent successfully'
+      message: "Input sent successfully",
     });
   } catch (error) {
-    if (error.code === 'TERMINAL_NOT_FOUND') {
+    if (error.code === "TERMINAL_NOT_FOUND") {
       return res.status(404).json({
         success: false,
         error: {
           code: error.code,
-          message: error.message
-        }
+          message: error.message,
+        },
       });
     }
 
     res.status(500).json({
       success: false,
       error: {
-        code: 'WRITE_FAILED',
-        message: error.message
-      }
+        code: "WRITE_FAILED",
+        message: error.message,
+      },
     });
   }
 }
@@ -315,43 +322,37 @@ export async function writeInput(req: Request, res: Response) {
 export async function readOutput(req: Request, res: Response) {
   try {
     const { terminalId } = req.params;
-    const {
-      since,
-      mode,
-      headLines,
-      tailLines,
-      maxLines
-    } = req.query;
+    const { since, mode, headLines, tailLines, maxLines } = req.query;
 
     const result = await terminalManager.readFromTerminal(terminalId, {
       since: since ? parseInt(since as string) : undefined,
       mode: mode as any,
       headLines: headLines ? parseInt(headLines as string) : undefined,
       tailLines: tailLines ? parseInt(tailLines as string) : undefined,
-      maxLines: maxLines ? parseInt(maxLines as string) : undefined
+      maxLines: maxLines ? parseInt(maxLines as string) : undefined,
     });
 
     res.json({
       success: true,
-      data: result
+      data: result,
     });
   } catch (error) {
-    if (error.code === 'TERMINAL_NOT_FOUND') {
+    if (error.code === "TERMINAL_NOT_FOUND") {
       return res.status(404).json({
         success: false,
         error: {
           code: error.code,
-          message: error.message
-        }
+          message: error.message,
+        },
       });
     }
 
     res.status(500).json({
       success: false,
       error: {
-        code: 'READ_FAILED',
-        message: error.message
-      }
+        code: "READ_FAILED",
+        message: error.message,
+      },
     });
   }
 }
@@ -363,27 +364,27 @@ export async function readOutput(req: Request, res: Response) {
 
 ```typescript
 // src/middleware/errorHandler.ts
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 
 export function errorHandler(
   err: any,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
-  console.error('Error:', err);
+  console.error("Error:", err);
 
   const statusCode = err.statusCode || 500;
-  const errorCode = err.code || 'INTERNAL_ERROR';
-  const message = err.message || 'Internal server error';
+  const errorCode = err.code || "INTERNAL_ERROR";
+  const message = err.message || "Internal server error";
 
   res.status(statusCode).json({
     success: false,
     error: {
       code: errorCode,
       message,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    }
+      ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    },
   });
 }
 ```
@@ -394,16 +395,14 @@ export function errorHandler(
 
 ```typescript
 // src/middleware/logger.ts
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 
 export function logger(req: Request, res: Response, next: NextFunction) {
   const start = Date.now();
 
-  res.on('finish', () => {
+  res.on("finish", () => {
     const duration = Date.now() - start;
-    console.log(
-      `${req.method} ${req.path} ${res.statusCode} ${duration}ms`
-    );
+    console.log(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
   });
 
   next();
@@ -421,21 +420,24 @@ class TerminalManager {
 
   constructor() {
     // 每 5 分钟检查一次超时会话
-    this.cleanupInterval = setInterval(() => {
-      this.cleanupTimeoutSessions();
-    }, 5 * 60 * 1000);
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanupTimeoutSessions();
+      },
+      5 * 60 * 1000,
+    );
   }
 
   private cleanupTimeoutSessions(): void {
     const now = Date.now();
-    const timeout = parseInt(process.env.SESSION_TIMEOUT || '86400000');
+    const timeout = parseInt(process.env.SESSION_TIMEOUT || "86400000");
 
     for (const [id, session] of this.sessions.entries()) {
       const inactive = now - session.lastActivity.getTime();
-      
-      if (inactive > timeout && session.status === 'active') {
+
+      if (inactive > timeout && session.status === "active") {
         console.log(`Cleaning up timeout session: ${id}`);
-        this.killTerminal(id).catch(err => {
+        this.killTerminal(id).catch((err) => {
           console.error(`Failed to cleanup session ${id}:`, err);
         });
       }
@@ -448,9 +450,7 @@ class TerminalManager {
 
     // 终止所有活跃终端
     const activeTerminals = Array.from(this.sessions.keys());
-    await Promise.all(
-      activeTerminals.map(id => this.killTerminal(id))
-    );
+    await Promise.all(activeTerminals.map((id) => this.killTerminal(id)));
   }
 }
 ```
@@ -461,36 +461,38 @@ class TerminalManager {
 
 ```typescript
 // src/server.ts
-import express from 'express';
-import cors from 'cors';
-import terminalRoutes from './routes/terminals';
-import { errorHandler } from './middleware/errorHandler';
-import { logger } from './middleware/logger';
+import express from "express";
+import cors from "cors";
+import terminalRoutes from "./routes/terminals";
+import { errorHandler } from "./middleware/errorHandler";
+import { logger } from "./middleware/logger";
 
 export function createServer() {
   const app = express();
 
   // 中间件
-  app.use(cors({
-    origin: process.env.CORS_ORIGIN || '*'
-  }));
+  app.use(
+    cors({
+      origin: process.env.CORS_ORIGIN || "*",
+    }),
+  );
   app.use(express.json());
   app.use(logger);
 
   // 健康检查
-  app.get('/api/health', (req, res) => {
+  app.get("/api/health", (req, res) => {
     res.json({
       success: true,
       data: {
-        status: 'healthy',
+        status: "healthy",
         uptime: process.uptime(),
-        version: process.env.npm_package_version || '1.0.0'
-      }
+        version: process.env.npm_package_version || "1.0.0",
+      },
     });
   });
 
   // 路由
-  app.use('/api', terminalRoutes);
+  app.use("/api", terminalRoutes);
 
   // 错误处理
   app.use(errorHandler);
@@ -501,14 +503,14 @@ export function createServer() {
 
 ```typescript
 // src/index.ts
-import dotenv from 'dotenv';
-import { createServer } from './server';
-import { terminalManager } from './services/terminalManager';
+import dotenv from "dotenv";
+import { createServer } from "./server";
+import { terminalManager } from "./services/terminalManager";
 
 dotenv.config();
 
-const PORT = parseInt(process.env.PORT || '3001');
-const HOST = process.env.HOST || '0.0.0.0';
+const PORT = parseInt(process.env.PORT || "3001");
+const HOST = process.env.HOST || "0.0.0.0";
 
 const app = createServer();
 
@@ -518,22 +520,22 @@ const server = app.listen(PORT, HOST, () => {
 });
 
 // 优雅关闭
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  
+process.on("SIGTERM", async () => {
+  console.log("SIGTERM received, shutting down gracefully...");
+
   server.close(() => {
-    console.log('HTTP server closed');
+    console.log("HTTP server closed");
   });
 
   await terminalManager.shutdown();
   process.exit(0);
 });
 
-process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down gracefully...');
-  
+process.on("SIGINT", async () => {
+  console.log("SIGINT received, shutting down gracefully...");
+
   server.close(() => {
-    console.log('HTTP server closed');
+    console.log("HTTP server closed");
   });
 
   await terminalManager.shutdown();
@@ -616,10 +618,10 @@ process.on('SIGINT', async () => {
 
 ```typescript
 // tests/terminals.test.ts
-import request from 'supertest';
-import { createServer } from '../src/server';
+import request from "supertest";
+import { createServer } from "../src/server";
 
-describe('Terminal API', () => {
+describe("Terminal API", () => {
   let app: any;
   let terminalId: string;
 
@@ -627,41 +629,41 @@ describe('Terminal API', () => {
     app = createServer();
   });
 
-  test('POST /api/terminals - Create terminal', async () => {
+  test("POST /api/terminals - Create terminal", async () => {
     const response = await request(app)
-      .post('/api/terminals')
+      .post("/api/terminals")
       .send({ cwd: process.cwd() })
       .expect(200);
 
     expect(response.body.success).toBe(true);
-    expect(response.body.data).toHaveProperty('terminalId');
-    
+    expect(response.body.data).toHaveProperty("terminalId");
+
     terminalId = response.body.data.terminalId;
   });
 
-  test('POST /api/terminals/:id/input - Send command', async () => {
+  test("POST /api/terminals/:id/input - Send command", async () => {
     const response = await request(app)
       .post(`/api/terminals/${terminalId}/input`)
-      .send({ input: 'pwd' })
+      .send({ input: "pwd" })
       .expect(200);
 
     expect(response.body.success).toBe(true);
   });
 
-  test('GET /api/terminals/:id/output - Read output', async () => {
+  test("GET /api/terminals/:id/output - Read output", async () => {
     // Wait for command to execute
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const response = await request(app)
       .get(`/api/terminals/${terminalId}/output`)
       .expect(200);
 
     expect(response.body.success).toBe(true);
-    expect(response.body.data).toHaveProperty('output');
+    expect(response.body.data).toHaveProperty("output");
     expect(response.body.data.output).toContain(process.cwd());
   });
 
-  test('DELETE /api/terminals/:id - Kill terminal', async () => {
+  test("DELETE /api/terminals/:id - Kill terminal", async () => {
     const response = await request(app)
       .delete(`/api/terminals/${terminalId}`)
       .expect(200);
@@ -699,4 +701,3 @@ describe('Terminal API', () => {
 ---
 
 **这份文档提供了所有关键的技术实现细节。请结合主提示词文档一起使用。**
-

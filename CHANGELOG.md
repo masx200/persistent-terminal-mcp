@@ -12,12 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.3] - 2025-10-18
 
 ### Fixed
+
 - 修复全局安装或通过 `npx` 调用时服务器未启动的问题：现在使用真实路径比较，确保符号链接
   与缓存目录都能正确识别入口脚本（`src/index.ts`）。
 
 ## [1.0.2] - 2025-10-18
 
 ### Added
+
 - **🌐 Web UI 管理界面**: 基于浏览器的可视化终端管理界面
   - 使用 xterm.js 渲染终端输出，支持完整 ANSI 颜色
   - WebSocket 实时推送，终端输出实时显示
@@ -31,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **📚 文档更新**: 全面更新中文 README，包含所有新功能说明
 
 ### Changed
+
 - 更新 README.zh-CN.md，采用更清晰的结构和更详细的功能说明
 - 优化文档导航，添加更多 emoji 图标提升可读性
 - npm 包装清理：新增二进制入口（`persistent-terminal-mcp`、`persistent-terminal-mcp-rest`），
@@ -40,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 #### 🔴 Critical: Terminal command execution and interaction issues
+
 - **Problem 1: Commands not executing properly**
   - Commands sent to terminal were not being executed
   - No command echo visible in output
@@ -64,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation**: See [TERMINAL_FIXES.md](TERMINAL_FIXES.md) for detailed analysis
 
 #### 🔴 Critical: Stdio channel pollution causing Cursor compatibility issues
+
 - **Problem**: Console logging was polluting stdout, causing JSON parsing errors in Cursor and other strict MCP clients
   - Error: `Unexpected token 'T', "Terminal c"... is not valid JSON`
   - Cursor would freeze after a few commands
@@ -83,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation**: See [STDIO_FIX.md](STDIO_FIX.md) for detailed analysis
 
 ### Added
+
 - **Spinner Animation Compaction**: Automatically detects and throttles progress animations
   - Identifies common spinner characters (⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏, ◐◓◑◒, etc.)
   - Reduces noise from `npm install`, `yarn`, `pnpm` and similar commands
@@ -106,6 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MCP_DEBUG` environment variable for controlling debug output
 
 ### Changed
+
 - **PTY Configuration**: Changed terminal type from `xterm-color` to `xterm-256color`
 - **Environment Variables**: Now sets `TERM`, `LANG`, and `PAGER` for better compatibility
 - **Write Logic**: Improved with drain event handling and immediate processing
@@ -124,12 +131,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 #### 🔴 Critical: Commands not executing automatically
+
 - **Problem**: Commands sent to terminal were displayed but not executed
 - **Solution**: `write_terminal` now automatically adds newline character if not present
 - **Impact**: Users can now send `"pwd"` instead of `"pwd\n"`
 - **Backward Compatible**: Yes - existing code with `\n` still works
 
 #### 🟡 Medium: Terminated terminals still in list
+
 - **Problem**: After `kill_terminal`, terminals remained in `list_terminals` with status "terminated"
 - **Solution**: Terminals are now completely removed from all internal maps after termination
 - **Impact**: Better memory management and cleaner terminal list
@@ -158,6 +167,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 #### Core Features
+
 - **Persistent Terminal Sessions**: Create and manage long-running terminal sessions
 - **Output Buffering**: Circular buffer with configurable size (default 10,000 lines)
 - **Smart Output Reading**: Multiple modes (full, head, tail, head-tail)
@@ -165,6 +175,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Session Management**: Automatic cleanup of timed-out sessions
 
 #### MCP Tools (6 total)
+
 1. `create_terminal` - Create new persistent terminal sessions
 2. `write_terminal` - Send input to terminal sessions
 3. `read_terminal` - Read output with smart truncation
@@ -173,20 +184,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 6. `kill_terminal` - Terminate terminal sessions
 
 #### MCP Resources (3 total)
+
 1. `terminal://list` - List of all terminals
 2. `terminal://{id}/output` - Terminal output
 3. `terminal://{id}/info` - Terminal information
 
 #### MCP Prompts (2 total)
+
 1. `debug-terminal` - Debug terminal issues
 2. `monitor-terminal` - Monitor terminal output
 
 #### REST API
+
 - Alternative HTTP interface for non-MCP clients
 - All MCP tools available as REST endpoints
 - CORS enabled for web clients
 
 #### Examples
+
 - `basic-usage.ts` - Basic terminal operations
 - `rest-api-demo.ts` - REST API usage
 - `interactive-demo.ts` - Interactive terminal demo
@@ -194,6 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `test-all-tools.ts` - Comprehensive tool testing
 
 #### Documentation
+
 - `README.md` - Project overview and quick start
 - `docs/meta/project-status.md` - Project status and roadmap
 - `docs/guides/usage.md` - Guide for AI assistants
@@ -203,6 +219,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `docs/reference/tools-summary.md` - Quick reference for all tools
 
 #### Configuration
+
 - Environment variables support (`MAX_BUFFER_SIZE`, `SESSION_TIMEOUT`)
 - Example configuration files for Claude Desktop and Claude Code
 - TOML configuration format support
@@ -210,6 +227,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Technical Details
 
 #### Architecture
+
 - TypeScript with strict mode
 - ES Modules (ESM)
 - Event-driven design using EventEmitter
@@ -217,12 +235,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - node-pty for PTY management
 
 #### Testing
+
 - Jest test framework
 - Unit tests for core functionality
 - Integration tests for MCP tools
 - Example scripts for manual testing
 
 #### Build System
+
 - TypeScript compiler (tsc)
 - tsx for development
 - npm scripts for common tasks

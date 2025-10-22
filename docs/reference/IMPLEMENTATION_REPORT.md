@@ -5,6 +5,7 @@
 成功实现了 Persistent Terminal MCP Server 的 Spinner 动画压缩功能，解决了 `npm create vite@latest` 等命令产生的进度动画遮挡真实日志的问题。
 
 **关键成果**:
+
 - ✅ 自动识别并压缩 spinner 动画，减少 70-90% 的输出噪音
 - ✅ 保留所有真实日志内容，不丢失任何重要信息
 - ✅ 默认启用，无需配置即可使用
@@ -26,6 +27,7 @@
 ### 示例场景
 
 **未压缩的输出**（100+ 行）:
+
 ```
 ⠋ Installing dependencies
 ⠙ Installing dependencies
@@ -44,6 +46,7 @@
 ```
 
 **压缩后的输出**（2-3 行）:
+
 ```
 ⠏ Installing dependencies
 ✓ Dependencies installed
@@ -82,7 +85,7 @@ private static readonly SPINNER_CHARS = new Set([
 private isSpinnerLine(content: string): boolean {
   // 1. 移除 ANSI 转义序列
   const cleanContent = content.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
-  
+
   // 2. 统计 spinner 字符
   let spinnerCharCount = 0;
   for (const char of cleanContent) {
@@ -90,7 +93,7 @@ private isSpinnerLine(content: string): boolean {
       spinnerCharCount++;
     }
   }
-  
+
   // 3. 计算占比（阈值 30%）
   const visibleChars = cleanContent.replace(/\s/g, '').length;
   return visibleChars > 0 && spinnerCharCount / visibleChars > 0.3;
@@ -103,23 +106,23 @@ private isSpinnerLine(content: string): boolean {
 private flushSpinnerBuffer(newEntries: OutputBufferEntry[], force: boolean = false): void {
   const now = Date.now();
   const timeSinceLastFlush = now - this.lastSpinnerFlush;
-  
+
   // 只在强制或超过节流时间时刷新
   if (!force && timeSinceLastFlush < this.animationThrottleMs) {
     return;
   }
-  
+
   if (this.spinnerCount > 0) {
     // 创建压缩表示
-    const compactMessage = this.spinnerBuffer 
-      ? this.spinnerBuffer 
+    const compactMessage = this.spinnerBuffer
+      ? this.spinnerBuffer
       : `[spinner ×${this.spinnerCount}]`;
-    
+
     const line = this.touchCurrentLine(newEntries, true);
     if (line) {
       line.content = compactMessage;
     }
-    
+
     this.spinnerBuffer = '';
     this.spinnerCount = 0;
     this.lastSpinnerFlush = now;
@@ -131,23 +134,23 @@ private flushSpinnerBuffer(newEntries: OutputBufferEntry[], force: boolean = fal
 
 ### 修改的文件
 
-| 文件 | 修改内容 | 行数变化 |
-|------|---------|---------|
-| `src/output-buffer.ts` | 添加 spinner 检测和节流逻辑 | +150 |
-| `src/terminal-manager.ts` | 集成配置选项 | +10 |
-| `src/types.ts` | 扩展类型定义 | +5 |
-| `src/mcp-server.ts` | 添加环境变量和参数支持 | +15 |
-| `src/rest-api.ts` | 修复类型错误 | +5 |
+| 文件                      | 修改内容                    | 行数变化 |
+| ------------------------- | --------------------------- | -------- |
+| `src/output-buffer.ts`    | 添加 spinner 检测和节流逻辑 | +150     |
+| `src/terminal-manager.ts` | 集成配置选项                | +10      |
+| `src/types.ts`            | 扩展类型定义                | +5       |
+| `src/mcp-server.ts`       | 添加环境变量和参数支持      | +15      |
+| `src/rest-api.ts`         | 修复类型错误                | +5       |
 
 ### 新增的文件
 
-| 文件 | 用途 | 行数 |
-|------|------|------|
-| `src/__tests__/spinner-detection.test.ts` | 单元测试 | 280 |
-| `src/examples/test-spinner-compaction.ts` | 演示脚本 | 200 |
-| `docs/guides/spinner-compaction.md` | 完整指南 | 300 |
-| `docs/guides/quick-start-spinner.md` | 快速入门 | 200 |
-| `SPINNER_COMPACTION_SUMMARY.md` | 实现总结 | 250 |
+| 文件                                      | 用途     | 行数 |
+| ----------------------------------------- | -------- | ---- |
+| `src/__tests__/spinner-detection.test.ts` | 单元测试 | 280  |
+| `src/examples/test-spinner-compaction.ts` | 演示脚本 | 200  |
+| `docs/guides/spinner-compaction.md`       | 完整指南 | 300  |
+| `docs/guides/quick-start-spinner.md`      | 快速入门 | 200  |
+| `SPINNER_COMPACTION_SUMMARY.md`           | 实现总结 | 250  |
 
 ## 配置选项
 
@@ -164,7 +167,7 @@ ANIMATION_THROTTLE_MS = "100"         # 节流时间（默认 100ms）
 ```typescript
 const manager = new TerminalManager({
   compactAnimations: true,
-  animationThrottleMs: 100
+  animationThrottleMs: 100,
 });
 ```
 
@@ -172,8 +175,8 @@ const manager = new TerminalManager({
 
 ```typescript
 const outputBuffer = manager.getOutputBuffer(terminalId);
-outputBuffer.setCompactAnimations(false);  // 禁用
-outputBuffer.setCompactAnimations(true);   // 启用
+outputBuffer.setCompactAnimations(false); // 禁用
+outputBuffer.setCompactAnimations(true); // 启用
 ```
 
 ### 4. MCP 工具参数
@@ -204,21 +207,25 @@ Time:        13.154 s
 ### 测试场景
 
 ✅ **基本功能**
+
 - Spinner 字符检测
 - 节流机制
 - 压缩表示
 
 ✅ **边界情况**
+
 - 空行处理
 - 混合内容
 - ANSI 转义序列
 
 ✅ **性能测试**
+
 - 快速更新（50 次）
 - 不同 spinner 类型
 - 大量输出
 
 ✅ **配置测试**
+
 - 启用/禁用切换
 - 动态配置
 - 环境变量
@@ -227,21 +234,21 @@ Time:        13.154 s
 
 ### 压缩效果
 
-| 场景 | 原始行数 | 压缩后行数 | 压缩率 |
-|------|---------|-----------|--------|
-| npm install | 120 | 15 | 87.5% |
-| yarn install | 100 | 12 | 88.0% |
-| vite build | 80 | 10 | 87.5% |
-| 平均 | 100 | 12 | 88.0% |
+| 场景         | 原始行数 | 压缩后行数 | 压缩率 |
+| ------------ | -------- | ---------- | ------ |
+| npm install  | 120      | 15         | 87.5%  |
+| yarn install | 100      | 12         | 88.0%  |
+| vite build   | 80       | 10         | 87.5%  |
+| 平均         | 100      | 12         | 88.0%  |
 
 ### Token 节省
 
-| 场景 | 原始 Tokens | 压缩后 Tokens | 节省 |
-|------|------------|--------------|------|
-| npm install | 500 | 80 | 84% |
-| yarn install | 450 | 70 | 84% |
-| vite build | 400 | 60 | 85% |
-| 平均 | 450 | 70 | 84% |
+| 场景         | 原始 Tokens | 压缩后 Tokens | 节省 |
+| ------------ | ----------- | ------------- | ---- |
+| npm install  | 500         | 80            | 84%  |
+| yarn install | 450         | 70            | 84%  |
+| vite build   | 400         | 60            | 85%  |
+| 平均         | 450         | 70            | 84%  |
 
 ### 性能开销
 
@@ -254,20 +261,20 @@ Time:        13.154 s
 ### 示例 1: 基本使用
 
 ```typescript
-import { TerminalManager } from 'persistent-terminal-mcp';
+import { TerminalManager } from "persistent-terminal-mcp";
 
 const manager = new TerminalManager();
 const terminalId = await manager.createTerminal();
 
 await manager.writeToTerminal({
   terminalId,
-  input: 'npm install'
+  input: "npm install",
 });
 
 await sleep(5000);
 
 const result = await manager.readFromTerminal({ terminalId });
-console.log(result.output);  // Spinner 已被压缩
+console.log(result.output); // Spinner 已被压缩
 ```
 
 ### 示例 2: 自定义配置
@@ -275,7 +282,7 @@ console.log(result.output);  // Spinner 已被压缩
 ```typescript
 const manager = new TerminalManager({
   compactAnimations: true,
-  animationThrottleMs: 50  // 更快的刷新
+  animationThrottleMs: 50, // 更快的刷新
 });
 ```
 
@@ -325,6 +332,7 @@ outputBuffer.setCompactAnimations(true);
 ### 向后兼容
 
 ✅ **完全兼容**
+
 - 默认启用，不影响现有代码
 - 所有原有测试通过
 - 可通过配置禁用
@@ -332,6 +340,7 @@ outputBuffer.setCompactAnimations(true);
 ### 平台支持
 
 ✅ **跨平台**
+
 - macOS ✓
 - Linux ✓
 - Windows ✓
@@ -339,6 +348,7 @@ outputBuffer.setCompactAnimations(true);
 ### Node.js 版本
 
 ✅ **支持版本**
+
 - Node.js >= 18.0.0
 
 ## 验证步骤
@@ -369,21 +379,25 @@ npm run example:spinner
 ### 成功指标
 
 ✅ **功能完整性**: 100%
+
 - 所有需求功能已实现
 - 支持多种配置方式
 - 提供完整的 API
 
 ✅ **测试覆盖率**: 100%
+
 - 33 个测试全部通过
 - 覆盖所有关键场景
 - 包含边界情况测试
 
 ✅ **文档完整性**: 100%
+
 - 用户文档完整
 - 开发者文档详尽
 - 中英文双语支持
 
 ✅ **性能表现**: 优秀
+
 - 压缩率 88%
 - Token 节省 84%
 - 开销 < 1%
@@ -430,4 +444,3 @@ npm start
 - [快速入门](docs/guides/quick-start-spinner.md)
 - [测试用例](src/__tests__/spinner-detection.test.ts)
 - [演示脚本](src/examples/test-spinner-compaction.ts)
-

@@ -8,6 +8,7 @@ automation flows. It is built on top of [`node-pty`](https://github.com/microsof
 so commands continue running even when the requesting client disconnects.
 
 ## Highlights
+
 - **Persistent PTY sessions** – create, reuse, and terminate long-running shells
 - **Smart output buffering** – incremental reads plus head, tail, or head-tail
   views with token estimates for large logs
@@ -23,36 +24,45 @@ so commands continue running even when the requesting client disconnects.
 ## Installation
 
 ### One-off run (recommended for MCP clients)
+
 Use `npx` to launch the server without a global install:
+
 ```bash
 npx persistent-terminal-mcp
 ```
 
 The REST flavor is available the same way:
+
 ```bash
 npx persistent-terminal-mcp-rest
 ```
 
 ### Project dependency
+
 Add the package to an existing project (CLI + TypeScript APIs):
+
 ```bash
 npm install persistent-terminal-mcp
 ```
 
 Now you can reference both the CLI binaries in `node_modules/.bin/` and the
 TypeScript exports:
+
 ```ts
-import { PersistentTerminalMcpServer } from 'persistent-terminal-mcp';
+import { PersistentTerminalMcpServer } from "persistent-terminal-mcp";
 ```
 
 ### Global install (optional)
+
 ```bash
 npm install --global persistent-terminal-mcp
 persistent-terminal-mcp
 ```
 
 ## Local Development
+
 Clone the repo if you want to work on the source:
+
 ```bash
 npm install          # install dependencies
 npm run build        # compile TypeScript → dist/
@@ -60,18 +70,22 @@ npm start            # launch the MCP server over stdio
 ```
 
 During development you can run the TypeScript sources directly:
+
 ```bash
 npm run dev          # MCP server (tsx)
 npm run dev:rest     # REST server (tsx)
 ```
 
 ### Debugging Mode
+
 To enable debug logging (output to stderr, won't interfere with MCP communication):
+
 ```bash
 MCP_DEBUG=true persistent-terminal-mcp
 ```
 
 ### Example Scripts
+
 ```bash
 npm run example:basic        # basic lifecycle (create → write → read → kill)
 npm run example:smart        # demonstrates head/tail/head-tail reading
@@ -107,6 +121,7 @@ Add the following configuration to your MCP settings file:
 ```
 
 **Note**:
+
 - The `-y` flag automatically confirms npx download prompts
 - If globally installed (`npm install -g persistent-terminal-mcp`), change `command` to `"persistent-terminal-mcp"` and remove `-y` from `args`
 
@@ -132,6 +147,7 @@ Add the following configuration to your MCP settings file:
 ```
 
 **Note**:
+
 - Windows requires `cmd /c` to invoke `npx`
 - If globally installed, change `args` to `["/c", "persistent-terminal-mcp"]`
 
@@ -180,9 +196,11 @@ claude mcp add persistent-terminal \
 > ### **🚫 Command-line configuration is NOT recommended**
 >
 > Please refer to the dedicated setup guide:
+>
 > ### 📖 [Windows persistent-terminal MCP setup](docs/clients/claude-code-windows.md)
 >
 > This guide provides two recommended approaches:
+>
 > - ✅ **Project-level configuration** (recommended): Create a `.mcp.json` file in your project root
 > - ✅ **Global configuration**: Use a Python script to modify `~/.claude.json`
 
@@ -237,13 +255,14 @@ ANIMATION_THROTTLE_MS = "100"
 ---
 
 ### Environment Variables
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MAX_BUFFER_SIZE` | Maximum number of lines to keep in buffer | 10000 |
-| `SESSION_TIMEOUT` | Session timeout in milliseconds | 86400000 (24 hours) |
-| `COMPACT_ANIMATIONS` | Enable spinner animation compaction | true |
-| `ANIMATION_THROTTLE_MS` | Animation throttle time in milliseconds | 100 |
-| `MCP_DEBUG` | Enable debug logging | false |
+
+| Variable                | Description                               | Default             |
+| ----------------------- | ----------------------------------------- | ------------------- |
+| `MAX_BUFFER_SIZE`       | Maximum number of lines to keep in buffer | 10000               |
+| `SESSION_TIMEOUT`       | Session timeout in milliseconds           | 86400000 (24 hours) |
+| `COMPACT_ANIMATIONS`    | Enable spinner animation compaction       | true                |
+| `ANIMATION_THROTTLE_MS` | Animation throttle time in milliseconds   | 100                 |
+| `MCP_DEBUG`             | Enable debug logging                      | false               |
 
 ## Programmatic Usage (TypeScript)
 
@@ -251,8 +270,8 @@ ANIMATION_THROTTLE_MS = "100"
 import {
   PersistentTerminalMcpServer,
   TerminalManager,
-  RestApiServer
-} from 'persistent-terminal-mcp';
+  RestApiServer,
+} from "persistent-terminal-mcp";
 
 const manager = new TerminalManager();
 const rest = new RestApiServer(manager);
@@ -268,30 +287,35 @@ All core classes and type definitions are available directly from the root
 module. Refer to [`src/index.ts`](src/index.ts) for the complete export list.
 
 ## MCP Tools
-| Tool | Purpose |
-|------|---------|
-| `create_terminal` | Create a persistent terminal session (supports `env`, `shell`, and `cwd`) |
-| `create_terminal_basic` | Convenience alias for clients that can only send simple strings |
-| `write_terminal` | Send input to a terminal; newline is added automatically if needed |
-| `read_terminal` | Retrieve buffered output with smart truncation options |
-| `wait_for_output` | Wait for terminal output to stabilize (useful after running commands) |
-| `get_terminal_stats` | Inspect buffer size, line counts, estimated tokens, and activity |
-| `list_terminals` | Enumerate active sessions and their metadata |
-| `kill_terminal` | Terminate a session with an optional signal |
+
+| Tool                    | Purpose                                                                   |
+| ----------------------- | ------------------------------------------------------------------------- |
+| `create_terminal`       | Create a persistent terminal session (supports `env`, `shell`, and `cwd`) |
+| `create_terminal_basic` | Convenience alias for clients that can only send simple strings           |
+| `write_terminal`        | Send input to a terminal; newline is added automatically if needed        |
+| `read_terminal`         | Retrieve buffered output with smart truncation options                    |
+| `wait_for_output`       | Wait for terminal output to stabilize (useful after running commands)     |
+| `get_terminal_stats`    | Inspect buffer size, line counts, estimated tokens, and activity          |
+| `list_terminals`        | Enumerate active sessions and their metadata                              |
+| `kill_terminal`         | Terminate a session with an optional signal                               |
 
 Additional MCP resources and prompts are exposed for listing sessions, viewing
 output, and surfacing troubleshooting tips inside compatible clients.
 
 ## REST API (Optional)
+
 If you prefer HTTP, start the REST variant:
+
 ```bash
 npx persistent-terminal-mcp-rest
 ```
+
 The server listens on port `3001` (configurable) and mirrors the MCP toolset.
 Endpoints include `/api/terminals`, `/api/terminals/:id/input`, `/api/terminals/:id/output`,
 `/api/terminals/:id/stats`, `/api/terminals`, and `/api/terminals/:id`.
 
 ## Project Layout
+
 ```
 docs/                → Consolidated documentation index
   ├── guides/        → Usage guides and tutorials
@@ -309,14 +333,17 @@ dist/                → Compiled JavaScript output
 ```
 
 ### Documentation Map
+
 All documentation is organized under [`docs/`](docs/README.md):
 
 **Quick Access:**
+
 - 📖 [Documentation Index](docs/README.md) – Complete documentation map
 - 🚨 [Fixes Index](docs/reference/fixes/README.md) – All fixes and solutions
 - 🧪 [Integration Tests](tests/integration/README.md) – Test suite
 
 **By Category:**
+
 - **Guides**: Usage, troubleshooting, MCP configuration
 - **Reference**: Technical details, tools summary, bug fixes
 - **Fixes**: Stdio fix, Cursor fix, terminal fixes
@@ -324,16 +351,19 @@ All documentation is organized under [`docs/`](docs/README.md):
 - **中文**: Chinese-language documentation
 
 ### Important Notes
+
 - **Stdio Purity**: This MCP server follows the MCP protocol strictly by ensuring stdout only contains JSON-RPC messages. All logging goes to stderr. See [docs/reference/fixes/STDIO_FIX.md](docs/reference/fixes/STDIO_FIX.md) for details.
 - **Cursor Compatibility**: Fully compatible with Cursor and other strict MCP clients that require clean JSON-RPC communication. See [docs/reference/fixes/QUICK_FIX_GUIDE.md](docs/reference/fixes/QUICK_FIX_GUIDE.md) for quick setup.
 - **Terminal Interaction**: Supports interactive applications (vim, npm create, etc.) with proper ANSI escape sequence handling. See [docs/reference/fixes/TERMINAL_FIXES.md](docs/reference/fixes/TERMINAL_FIXES.md) for details.
 - **Output Stability**: Use `wait_for_output` tool to ensure complete output capture after running commands.
 
 ## Contributing
+
 Contributions are welcome! Please open an issue or pull request if you
 encounter bugs or have ideas for new capabilities. The
 [`CONTRIBUTING.md`](CONTRIBUTING.md) file outlines the recommended workflow and
 coding standards.
 
 ## License
+
 This project is released under the [MIT License](LICENSE).

@@ -7,6 +7,7 @@
 ## ✅ 已完成的功能
 
 ### 1. 核心功能
+
 - ✅ **持久终端会话管理**: 使用 node-pty 创建和管理 PTY 进程
 - ✅ **会话持久化**: 终端会话在客户端断开连接后继续运行
 - ✅ **输出缓冲**: 实现循环缓冲区存储终端输出，支持历史回放
@@ -16,6 +17,7 @@
 - ✅ **统计信息**: 提供字节数、token 估算、行数等详细统计 **[新增]**
 
 ### 2. MCP 服务器
+
 - ✅ **6个核心工具**:
   - `create_terminal`: 创建新终端会话
   - `write_terminal`: 向终端发送输入
@@ -34,6 +36,7 @@
   - `terminal-troubleshooting`: 故障排除指南
 
 ### 3. REST API 服务器
+
 - ✅ **完整的 HTTP 接口**:
   - `GET /health`: 健康检查
   - `POST /terminals`: 创建终端
@@ -46,11 +49,13 @@
   - `GET /stats`: 获取统计信息
 
 ### 4. 示例和演示
+
 - ✅ **基本使用示例** (`src/examples/basic-usage.ts`): 展示核心功能
 - ✅ **REST API 演示** (`src/examples/rest-api-demo.ts`): 演示所有 HTTP 端点
 - ✅ **交互式演示** (`src/examples/interactive-demo.ts`): 命令行交互界面
 
 ### 5. 测试和质量保证
+
 - ✅ **单元测试**: 14个测试用例，覆盖核心功能
 - ✅ **TypeScript 严格模式**: 完整的类型安全
 - ✅ **错误处理**: 全面的错误处理和验证
@@ -59,12 +64,14 @@
 ## 🚀 测试结果
 
 ### 构建测试
+
 ```
 ✅ TypeScript 编译成功
 ✅ 无编译错误或警告
 ```
 
 ### 功能测试
+
 ```
 ✅ 基本使用示例运行成功
 ✅ REST API 演示运行成功
@@ -73,6 +80,7 @@
 ```
 
 ### 性能测试
+
 ```
 ✅ 终端创建响应时间 < 1秒
 ✅ 输出读取响应时间 < 100ms
@@ -112,18 +120,21 @@ src/
 ## 🎯 使用方式
 
 ### 1. MCP 服务器（推荐用于 LLM 集成）
+
 ```bash
 npm run dev  # 开发模式
 npm start    # 生产模式
 ```
 
 ### 2. REST API 服务器（用于 HTTP 客户端）
+
 ```bash
 npm run dev:rest   # 开发模式，端口 3001
 npm run start:rest # 生产模式
 ```
 
 ### 3. 示例演示
+
 ```bash
 npm run example:basic        # 基本功能演示
 npm run example:rest         # REST API 演示
@@ -149,6 +160,7 @@ npm run example:interactive  # 交互式命令行界面
 ## 🆕 最新功能亮点
 
 ### 智能输出截断
+
 解决了长输出超出 LLM token 限制的问题：
 
 - **统计信息**: 实时获取输出大小、token 估算
@@ -161,12 +173,14 @@ npm run example:interactive  # 交互式命令行界面
 - **性能优化**: 避免传输和处理过大的数据
 
 ### 使用场景
+
 - ✅ `npm install` 等长输出命令
 - ✅ 日志文件查看
 - ✅ 编译输出处理
 - ✅ 大型项目构建过程
 
 ### 示例效果
+
 ```
 --- Head-Tail Output ---
 Installing package 1/100...
@@ -185,6 +199,7 @@ Stats: 6 shown, 94 omitted
 ## 🎉 项目状态：完成 ✅
 
 **核心价值:**
+
 - 🔄 持久化：终端会话不会因客户端断开而丢失
 - 📊 缓冲：智能输出缓冲，支持历史回放
 - 🧠 智能：自动处理长输出，避免 token 限制

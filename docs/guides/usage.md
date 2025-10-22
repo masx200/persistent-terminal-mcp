@@ -9,7 +9,9 @@
 ## 🎯 核心原则
 
 ### ⚠️ 关键问题
+
 传统的命令执行方式在遇到以下情况时会**卡住或超时**：
+
 - `npm start` / `npm run dev` - 开发服务器持续运行
 - `python manage.py runserver` - Web 服务器
 - `node server.js` - Node.js 服务器
@@ -17,7 +19,9 @@
 - 任何需要持续输出的命令
 
 ### ✅ 解决方案
+
 使用 **persistent-terminal MCP** 的 7 个工具来管理这些长时间运行的进程：
+
 1. `create_terminal` - 创建持久终端会话（支持自定义环境变量）
 2. `create_terminal_basic` - 面向受限客户端的精简创建入口
 3. `write_terminal` - 向终端发送命令
@@ -44,6 +48,7 @@
 
 > ℹ️ **客户端受限时的精简入口**  
 > 如果你的运行环境无法构造复杂对象参数（尤其是 `env` 字段），可以改用 `create_terminal_basic`：
+>
 > ```json
 > {
 >   "name": "create_terminal_basic",
@@ -53,9 +58,11 @@
 >   }
 > }
 > ```
+>
 > 该工具会返回同样的终端信息，并在 `structuredContent` 中直接给出 `terminalId` 方便后续复用。
 
 **返回示例：**
+
 ```
 Terminal ID: abc-123-def-456
 PID: 12345
@@ -80,6 +87,7 @@ Status: active
 ```
 
 **注意：**
+
 - 命令末尾必须加 `\n` 表示回车
 - 命令发送后立即返回，不会等待命令完成
 - 进程在后台持续运行
@@ -89,11 +97,13 @@ Status: active
 ### 步骤 3: 等待并检查输出
 
 **等待 3-5 秒让命令启动：**
+
 ```
 （在你的代码中等待 3-5 秒）
 ```
 
 **然后读取输出：**
+
 ```json
 {
   "name": "read_terminal",
@@ -110,6 +120,7 @@ Status: active
 #### ✅ 成功启动的标志
 
 **Vite/React 开发服务器：**
+
 ```
 VITE v5.0.0  ready in 500 ms
 
@@ -118,12 +129,14 @@ VITE v5.0.0  ready in 500 ms
 ```
 
 **Next.js：**
+
 ```
 - ready started server on 0.0.0.0:3000, url: http://localhost:3000
 - event compiled client and server successfully
 ```
 
 **Express/Node.js：**
+
 ```
 Server is running on port 3000
 Listening on http://localhost:3000
@@ -159,6 +172,7 @@ npm ERR! code ELIFECYCLE
 ```
 
 **返回示例：**
+
 ```
 Total Lines: 5000
 Total Bytes: 150000
@@ -169,6 +183,7 @@ Status: Active
 #### 2. 根据输出大小选择读取模式
 
 **如果输出较少（< 100 行）：**
+
 ```json
 {
   "name": "read_terminal",
@@ -180,6 +195,7 @@ Status: Active
 ```
 
 **如果输出很多（> 100 行）：**
+
 ```json
 {
   "name": "read_terminal",
@@ -193,6 +209,7 @@ Status: Active
 ```
 
 **只看最新输出：**
+
 ```json
 {
   "name": "read_terminal",
@@ -205,6 +222,7 @@ Status: Active
 ```
 
 **只看开头（检查启动信息）：**
+
 ```json
 {
   "name": "read_terminal",
@@ -221,6 +239,7 @@ Status: Active
 ## 🔍 增量读取：只获取新输出
 
 ### 场景
+
 用户报告："页面打不开" 或 "有错误"
 
 ### 解决方案：使用 `since` 参数
@@ -236,11 +255,13 @@ Status: Active
 ```
 
 **说明：**
+
 - `since: 100` 表示从第 100 行之后开始读取
 - 只返回新产生的输出
 - 避免重复读取已经看过的内容
 
 **工作流程：**
+
 1. 第一次读取：`read_terminal` → 返回 "Next Read From: 100"
 2. 等待一段时间
 3. 第二次读取：`read_terminal` with `since: 100` → 只返回新输出
@@ -255,23 +276,23 @@ Status: Active
 
 ```javascript
 // 1. 创建终端
-create_terminal({ cwd: "/path/to/project" })
+create_terminal({ cwd: "/path/to/project" });
 // 保存 terminalId
 
 // 2. 启动服务器
-write_terminal({ 
-  terminalId: "xxx", 
-  input: "npm run dev\n" 
-})
+write_terminal({
+  terminalId: "xxx",
+  input: "npm run dev\n",
+});
 
 // 3. 等待 5 秒
 
 // 4. 检查输出
-read_terminal({ 
+read_terminal({
   terminalId: "xxx",
   mode: "tail",
-  tailLines: 30
-})
+  tailLines: 30,
+});
 
 // 5. 分析输出
 // - 如果看到 "Local: http://localhost:5173/" → 成功
@@ -284,14 +305,14 @@ read_terminal({
 
 ```javascript
 // 1. 获取统计信息，看看是否有新输出
-get_terminal_stats({ terminalId: "xxx" })
+get_terminal_stats({ terminalId: "xxx" });
 // 返回: Total Lines: 250
 
 // 2. 读取最新输出（假设上次读到第 200 行）
-read_terminal({ 
+read_terminal({
   terminalId: "xxx",
-  since: 200
-})
+  since: 200,
+});
 
 // 3. 查找错误信息
 // - "ECONNREFUSED" → 服务器未启动
@@ -306,11 +327,11 @@ read_terminal({
 
 ```javascript
 // 1. 读取最新的 50 行输出
-read_terminal({ 
+read_terminal({
   terminalId: "xxx",
   mode: "tail",
-  tailLines: 50
-})
+  tailLines: 50,
+});
 
 // 2. 查找错误关键词
 // - "Error:"
@@ -319,11 +340,11 @@ read_terminal({
 // - "npm ERR!"
 
 // 3. 如果需要更多上下文
-read_terminal({ 
+read_terminal({
   terminalId: "xxx",
   mode: "tail",
-  tailLines: 100
-})
+  tailLines: 100,
+});
 ```
 
 ---
@@ -339,13 +360,13 @@ list_terminals()
 // Status: terminated → 已停止
 
 // 3. 如果是 active，发送测试命令
-write_terminal({ 
+write_terminal({
   terminalId: "xxx",
   input: "echo 'Server check'\n"
 })
 
 // 4. 读取输出确认响应
-read_terminal({ 
+read_terminal({
   terminalId: "xxx",
   since: <last_line>
 })
@@ -357,17 +378,17 @@ read_terminal({
 
 ```javascript
 // 1. 终止旧的终端
-kill_terminal({ terminalId: "old-xxx" })
+kill_terminal({ terminalId: "old-xxx" });
 
 // 2. 创建新终端
-create_terminal({ cwd: "/path/to/project" })
+create_terminal({ cwd: "/path/to/project" });
 // 获取新的 terminalId
 
 // 3. 启动服务器
-write_terminal({ 
+write_terminal({
   terminalId: "new-xxx",
-  input: "npm run dev\n"
-})
+  input: "npm run dev\n",
+});
 
 // 4. 等待并检查
 // （参考场景 1）
@@ -380,26 +401,31 @@ write_terminal({
 ### ✅ DO（应该做的）
 
 1. **总是保存 Terminal ID**
+
    ```
    创建终端后，立即记录返回的 terminalId
    ```
 
 2. **使用智能截断**
+
    ```
    输出超过 100 行时，使用 head-tail 模式
    ```
 
 3. **增量读取**
+
    ```
    使用 since 参数避免重复读取
    ```
 
 4. **等待启动**
+
    ```
    发送命令后等待 3-5 秒再读取输出
    ```
 
 5. **检查统计信息**
+
    ```
    读取大量输出前，先用 get_terminal_stats 查看大小
    ```
@@ -412,12 +438,14 @@ write_terminal({
 ### ❌ DON'T（不应该做的）
 
 1. **不要使用传统的阻塞命令执行**
+
    ```
    ❌ exec("npm run dev")  // 会卡住
    ✅ write_terminal + read_terminal  // 正确方式
    ```
 
 2. **不要忘记 \n（除非你真的不需要）**
+
    ```
    ❌ write_terminal({ input: "npm start" })
    ✅ write_terminal({ input: "npm start\n" })
@@ -425,12 +453,14 @@ write_terminal({
    ```
 
 3. **不要立即读取输出**
+
    ```
    ❌ write_terminal → 立即 read_terminal
    ✅ write_terminal → 等待 3-5 秒 → read_terminal
    ```
 
 4. **不要读取全部输出（如果很大）**
+
    ```
    ❌ read_terminal({ mode: "full" })  // 5000 行
    ✅ read_terminal({ mode: "head-tail", headLines: 20, tailLines: 20 })
@@ -562,6 +592,7 @@ write_terminal({
 ```
 
 **优势：**
+
 - 开头 10 行：看到启动信息、配置信息
 - 结尾 10 行：看到最新的错误或状态
 - 中间省略：节省 token
@@ -575,10 +606,10 @@ write_terminal({
 let lastLine = 0;
 
 setInterval(() => {
-  read_terminal({ 
+  read_terminal({
     terminalId: "xxx",
-    since: lastLine
-  })
+    since: lastLine,
+  });
   // 更新 lastLine 为返回的 "Next Read From" 值
 }, 5000);
 ```
@@ -588,6 +619,7 @@ setInterval(() => {
 ### 技巧 3: 搜索特定错误
 
 读取输出后，在返回的文本中搜索：
+
 - `Error:`
 - `Exception:`
 - `Failed`
@@ -601,15 +633,15 @@ setInterval(() => {
 
 ## 📚 工具参考速查表
 
-| 工具 | 用途 | 关键参数 |
-|------|------|---------|
-| `create_terminal` | 创建终端（支持自定义环境变量） | `cwd`, `shell`, `env` |
-| `create_terminal_basic` | 精简版创建（仅 shell/cwd） | `cwd`, `shell` |
-| `write_terminal` | 发送命令 | `terminalId`, `input` |
-| `read_terminal` | 读取输出 | `terminalId`, `since`, `mode`, `headLines`, `tailLines` |
-| `get_terminal_stats` | 获取统计 | `terminalId` |
-| `list_terminals` | 列出终端 | 无 |
-| `kill_terminal` | 终止终端 | `terminalId` |
+| 工具                    | 用途                           | 关键参数                                                |
+| ----------------------- | ------------------------------ | ------------------------------------------------------- |
+| `create_terminal`       | 创建终端（支持自定义环境变量） | `cwd`, `shell`, `env`                                   |
+| `create_terminal_basic` | 精简版创建（仅 shell/cwd）     | `cwd`, `shell`                                          |
+| `write_terminal`        | 发送命令                       | `terminalId`, `input`                                   |
+| `read_terminal`         | 读取输出                       | `terminalId`, `since`, `mode`, `headLines`, `tailLines` |
+| `get_terminal_stats`    | 获取统计                       | `terminalId`                                            |
+| `list_terminals`        | 列出终端                       | 无                                                      |
+| `kill_terminal`         | 终止终端                       | `terminalId`                                            |
 
 ---
 

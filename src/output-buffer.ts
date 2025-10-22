@@ -1,9 +1,9 @@
-import { EventEmitter } from 'events';
-import { 
-  OutputBufferEntry, 
-  BufferReadOptions, 
-  BufferReadResult 
-} from './types.js';
+import { EventEmitter } from "events";
+import {
+  OutputBufferEntry,
+  BufferReadOptions,
+  BufferReadResult,
+} from "./types.js";
 
 /**
  * 终端输出缓冲器
@@ -22,23 +22,54 @@ export class OutputBuffer extends EventEmitter {
   // Spinner detection and throttling
   private compactAnimations: boolean;
   private animationThrottleMs: number;
-  private spinnerBuffer: string = '';
+  private spinnerBuffer: string = "";
   private spinnerCount: number = 0;
   private lastSpinnerFlush: number = 0;
   private spinnerFlushTimer: NodeJS.Timeout | null = null;
 
   // Common spinner characters used by npm, yarn, pnpm, etc.
   private static readonly SPINNER_CHARS = new Set([
-    '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏',  // Braille spinners
-    '◐', '◓', '◑', '◒',  // Circle spinners
-    '◴', '◷', '◶', '◵',  // Quarter circle spinners
-    '◰', '◳', '◲', '◱',  // Box spinners
-    '▖', '▘', '▝', '▗',  // Block spinners
-    '|', '/', '-', '\\',  // Classic ASCII spinner
-    '●', '○', '◉', '◎',  // Dot spinners
+    "⠋",
+    "⠙",
+    "⠹",
+    "⠸",
+    "⠼",
+    "⠴",
+    "⠦",
+    "⠧",
+    "⠇",
+    "⠏", // Braille spinners
+    "◐",
+    "◓",
+    "◑",
+    "◒", // Circle spinners
+    "◴",
+    "◷",
+    "◶",
+    "◵", // Quarter circle spinners
+    "◰",
+    "◳",
+    "◲",
+    "◱", // Box spinners
+    "▖",
+    "▘",
+    "▝",
+    "▗", // Block spinners
+    "|",
+    "/",
+    "-",
+    "\\", // Classic ASCII spinner
+    "●",
+    "○",
+    "◉",
+    "◎", // Dot spinners
   ]);
 
-  constructor(terminalId: string, maxSize = 10000, options: { compactAnimations?: boolean; animationThrottleMs?: number } = {}) {
+  constructor(
+    terminalId: string,
+    maxSize = 10000,
+    options: { compactAnimations?: boolean; animationThrottleMs?: number } = {},
+  ) {
     super();
     this.terminalId = terminalId;
     this.maxSize = maxSize;
@@ -67,7 +98,7 @@ export class OutputBuffer extends EventEmitter {
     if (!content || content.length === 0) return false;
 
     // Remove ANSI escape sequences for analysis
-    const cleanContent = content.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
+    const cleanContent = content.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "");
 
     // Check if the line contains spinner characters
     let spinnerCharCount = 0;
@@ -78,7 +109,7 @@ export class OutputBuffer extends EventEmitter {
     }
 
     // If more than 30% of visible characters are spinner chars, consider it a spinner line
-    const visibleChars = cleanContent.replace(/\s/g, '').length;
+    const visibleChars = cleanContent.replace(/\s/g, "").length;
     return visibleChars > 0 && spinnerCharCount / visibleChars > 0.3;
   }
 
@@ -88,7 +119,7 @@ export class OutputBuffer extends EventEmitter {
   private flushSpinnerBuffer(
     newEntries: OutputBufferEntry[],
     force: boolean = false,
-    markUpdated?: (entry: OutputBufferEntry | null) => void
+    markUpdated?: (entry: OutputBufferEntry | null) => void,
   ): void {
     if (!this.compactAnimations) return;
 
@@ -116,7 +147,7 @@ export class OutputBuffer extends EventEmitter {
         }
       }
 
-      this.spinnerBuffer = '';
+      this.spinnerBuffer = "";
       this.spinnerCount = 0;
       this.lastSpinnerFlush = now;
     }
@@ -135,12 +166,16 @@ export class OutputBuffer extends EventEmitter {
   /**
    * 创建新的缓冲条目
    */
-  private createEntry(initialContent: string, newEntries: OutputBufferEntry[], skipIfDuplicateBlank: boolean): OutputBufferEntry | null {
+  private createEntry(
+    initialContent: string,
+    newEntries: OutputBufferEntry[],
+    skipIfDuplicateBlank: boolean,
+  ): OutputBufferEntry | null {
     if (
       skipIfDuplicateBlank &&
-      initialContent === '' &&
+      initialContent === "" &&
       this.buffer.length > 0 &&
-      this.buffer[this.buffer.length - 1]!.content === ''
+      this.buffer[this.buffer.length - 1]!.content === ""
     ) {
       return null;
     }
@@ -149,7 +184,7 @@ export class OutputBuffer extends EventEmitter {
       timestamp: new Date(),
       content: initialContent,
       lineNumber: this.currentLineNumber++,
-      sequence: this.nextSequence()
+      sequence: this.nextSequence(),
     };
 
     this.buffer.push(entry);
@@ -159,7 +194,10 @@ export class OutputBuffer extends EventEmitter {
     return entry;
   }
 
-  private touchCurrentLine(newEntries: OutputBufferEntry[], reuseLast = false): OutputBufferEntry | null {
+  private touchCurrentLine(
+    newEntries: OutputBufferEntry[],
+    reuseLast = false,
+  ): OutputBufferEntry | null {
     if (this.currentLineEntry) {
       if (!newEntries.includes(this.currentLineEntry)) {
         newEntries.push(this.currentLineEntry);
@@ -176,7 +214,7 @@ export class OutputBuffer extends EventEmitter {
       return entry;
     }
 
-    const entry = this.createEntry('', newEntries, false);
+    const entry = this.createEntry("", newEntries, false);
     this.currentLineEntry = entry;
     return entry;
   }
@@ -186,15 +224,15 @@ export class OutputBuffer extends EventEmitter {
    */
   private finalizeCurrentLine(newEntries: OutputBufferEntry[]): void {
     if (!this.currentLineEntry) {
-      const entry = this.createEntry('', newEntries, true);
+      const entry = this.createEntry("", newEntries, true);
       if (entry) {
         this.stampSequence(entry);
       }
-    } else if (this.currentLineEntry.content === '') {
+    } else if (this.currentLineEntry.content === "") {
       const lastIndex = this.buffer.length - 1;
       if (lastIndex >= 0 && this.buffer[lastIndex] === this.currentLineEntry) {
         const previous = this.buffer[lastIndex - 1];
-        if (previous && previous.content === '') {
+        if (previous && previous.content === "") {
           this.buffer.pop();
         }
       }
@@ -213,43 +251,56 @@ export class OutputBuffer extends EventEmitter {
         this.currentLineEntry = null;
       }
       if (removed) {
-        this.oldestSequence = this.buffer.length > 0 ? this.buffer[0]!.sequence : this.latestSequence;
+        this.oldestSequence =
+          this.buffer.length > 0
+            ? this.buffer[0]!.sequence
+            : this.latestSequence;
       }
     }
   }
 
-  private consumeEscapeSequence(input: string, startIndex: number): { sequence: string; nextIndex: number } {
+  private consumeEscapeSequence(
+    input: string,
+    startIndex: number,
+  ): { sequence: string; nextIndex: number } {
     let endIndex = startIndex + 1;
 
     if (endIndex >= input.length) {
       return {
         sequence: input[startIndex]!,
-        nextIndex: startIndex
+        nextIndex: startIndex,
       };
     }
 
     const nextChar = input[endIndex]!;
 
-    if (nextChar === '[') {
+    if (nextChar === "[") {
       endIndex++;
       while (endIndex < input.length) {
         const ch = input[endIndex]!;
-        if ((ch >= '0' && ch <= '9') || ch === ';' || ch === '?' || ch === ':' || ch === '>' || ch === '<') {
+        if (
+          (ch >= "0" && ch <= "9") ||
+          ch === ";" ||
+          ch === "?" ||
+          ch === ":" ||
+          ch === ">" ||
+          ch === "<"
+        ) {
           endIndex++;
           continue;
         }
         endIndex++;
         break;
       }
-    } else if (nextChar === ']') {
+    } else if (nextChar === "]") {
       endIndex++;
       while (endIndex < input.length) {
         const ch = input[endIndex]!;
-        if (ch === '') {
+        if (ch === "") {
           endIndex++;
           break;
         }
-        if (ch === '' && input[endIndex + 1] === '\\') {
+        if (ch === "" && input[endIndex + 1] === "\\") {
           endIndex += 2;
           break;
         }
@@ -265,34 +316,34 @@ export class OutputBuffer extends EventEmitter {
 
     return {
       sequence: input.slice(startIndex, endIndex),
-      nextIndex: endIndex - 1
+      nextIndex: endIndex - 1,
     };
   }
 
   private handleEscapeSequence(
     sequence: string,
     newEntries: OutputBufferEntry[],
-    markUpdated: (entry: OutputBufferEntry | null) => void
+    markUpdated: (entry: OutputBufferEntry | null) => void,
   ): void {
     if (!sequence || sequence.length === 0) {
       return;
     }
 
-    if (sequence.startsWith('[')) {
+    if (sequence.startsWith("[")) {
       const finalChar = sequence[sequence.length - 1]!;
 
       switch (finalChar) {
-        case 'K':
-        case 'J':
-        case 'G':
-        case 'D':
-        case 'C': {
+        case "K":
+        case "J":
+        case "G":
+        case "D":
+        case "C": {
           // When we receive erase/move sequences after a newline, ensure we
           // operate on the current (possibly new) line instead of mutating the
           // previously finalized entry.
           const line = this.touchCurrentLine(newEntries);
           if (line) {
-            line.content = '';
+            line.content = "";
             markUpdated(line);
           }
           break;
@@ -330,16 +381,16 @@ export class OutputBuffer extends EventEmitter {
     for (let i = 0; i < content.length; i++) {
       const char = content[i]!;
 
-      if (char === '') {
+      if (char === "") {
         const { sequence, nextIndex } = this.consumeEscapeSequence(content, i);
         this.handleEscapeSequence(sequence, newEntries, markUpdated);
         i = nextIndex;
         continue;
       }
 
-      if (char === '\r') {
+      if (char === "\r") {
         const nextChar = content[i + 1];
-        if (nextChar === '\n') {
+        if (nextChar === "\n") {
           // Flush any pending spinner before finalizing line
           if (this.compactAnimations && this.currentLineEntry) {
             const isSpinner = this.isSpinnerLine(this.currentLineEntry.content);
@@ -353,7 +404,7 @@ export class OutputBuffer extends EventEmitter {
                 const flushEntries: OutputBufferEntry[] = [];
                 this.flushSpinnerBuffer(flushEntries, true, markUpdated);
                 if (flushEntries.length > 0) {
-                  this.emit('data', flushEntries);
+                  this.emit("data", flushEntries);
                 }
               }, this.animationThrottleMs);
 
@@ -381,7 +432,7 @@ export class OutputBuffer extends EventEmitter {
                 const flushEntries: OutputBufferEntry[] = [];
                 this.flushSpinnerBuffer(flushEntries, true, markUpdated);
                 if (flushEntries.length > 0) {
-                  this.emit('data', flushEntries);
+                  this.emit("data", flushEntries);
                 }
               }, this.animationThrottleMs);
             } else {
@@ -393,14 +444,14 @@ export class OutputBuffer extends EventEmitter {
           // Overwrite current line
           const line = this.touchCurrentLine(newEntries, true);
           if (line) {
-            line.content = '';
+            line.content = "";
             markUpdated(line);
           }
         }
         continue;
       }
 
-      if (char === '\n') {
+      if (char === "\n") {
         // Flush any pending spinner before finalizing line
         if (this.compactAnimations && this.currentLineEntry) {
           const isSpinner = this.isSpinnerLine(this.currentLineEntry.content);
@@ -421,7 +472,7 @@ export class OutputBuffer extends EventEmitter {
     }
 
     if (newEntries.length > 0) {
-      this.emit('data', newEntries);
+      this.emit("data", newEntries);
     }
   }
 
@@ -431,30 +482,35 @@ export class OutputBuffer extends EventEmitter {
   read(options: BufferReadOptions = {}): BufferReadResult {
     const { since = 0, maxLines = 1000 } = options;
 
-    const filtered = this.buffer.filter(entry => entry.sequence > since);
+    const filtered = this.buffer.filter((entry) => entry.sequence > since);
     const entries = maxLines ? filtered.slice(-maxLines) : filtered;
     const truncated = Boolean(maxLines && filtered.length > entries.length);
-    const nextCursor = entries.length > 0 ? entries[entries.length - 1]!.sequence : since;
-    const hasMore = truncated || (this.oldestSequence > 0 && since > 0 && since < this.oldestSequence);
+    const nextCursor =
+      entries.length > 0 ? entries[entries.length - 1]!.sequence : since;
+    const hasMore =
+      truncated ||
+      (this.oldestSequence > 0 && since > 0 && since < this.oldestSequence);
 
     return {
       entries,
       totalLines: this.currentLineNumber,
       hasMore,
-      nextCursor
+      nextCursor,
     };
   }
 
   /**
    * 智能读取：支持头尾模式
    */
-  readSmart(options: {
-    since?: number;
-    mode?: 'full' | 'head-tail' | 'head' | 'tail';
-    headLines?: number;
-    tailLines?: number;
-    maxLines?: number;
-  } = {}): {
+  readSmart(
+    options: {
+      since?: number;
+      mode?: "full" | "head-tail" | "head" | "tail";
+      headLines?: number;
+      tailLines?: number;
+      maxLines?: number;
+    } = {},
+  ): {
     entries: OutputBufferEntry[];
     totalLines: number;
     hasMore: boolean;
@@ -469,24 +525,24 @@ export class OutputBuffer extends EventEmitter {
   } {
     const {
       since = 0,
-      mode = 'full',
+      mode = "full",
       headLines = 50,
       tailLines = 50,
-      maxLines = 1000
+      maxLines = 1000,
     } = options;
 
-    const allEntries = this.buffer.filter(entry => entry.sequence > since);
+    const allEntries = this.buffer.filter((entry) => entry.sequence > since);
     let resultEntries: OutputBufferEntry[] = [];
     let truncated = false;
     let linesOmitted = 0;
 
     // 计算总字节数和估算 token 数
-    const totalText = allEntries.map(e => e.content).join('\n');
-    const totalBytes = Buffer.byteLength(totalText, 'utf8');
+    const totalText = allEntries.map((e) => e.content).join("\n");
+    const totalBytes = Buffer.byteLength(totalText, "utf8");
     const estimatedTokens = Math.ceil(totalText.length / 4); // 粗略估算：4字符≈1token
 
     switch (mode) {
-      case 'head':
+      case "head":
         if (allEntries.length > headLines) {
           resultEntries = allEntries.slice(0, headLines);
           truncated = true;
@@ -496,7 +552,7 @@ export class OutputBuffer extends EventEmitter {
         }
         break;
 
-      case 'tail':
+      case "tail":
         if (allEntries.length > tailLines) {
           resultEntries = allEntries.slice(-tailLines);
           truncated = true;
@@ -506,7 +562,7 @@ export class OutputBuffer extends EventEmitter {
         }
         break;
 
-      case 'head-tail':
+      case "head-tail":
         if (allEntries.length > headLines + tailLines) {
           const head = allEntries.slice(0, headLines);
           const tail = allEntries.slice(-tailLines);
@@ -518,7 +574,7 @@ export class OutputBuffer extends EventEmitter {
         }
         break;
 
-      case 'full':
+      case "full":
       default:
         if (maxLines && allEntries.length > maxLines) {
           resultEntries = allEntries.slice(-maxLines);
@@ -530,9 +586,13 @@ export class OutputBuffer extends EventEmitter {
         break;
     }
 
-    const hasMore = this.oldestSequence > 0 && since > 0 && since < this.oldestSequence;
+    const hasMore =
+      this.oldestSequence > 0 && since > 0 && since < this.oldestSequence;
 
-    const nextCursor = resultEntries.length > 0 ? resultEntries[resultEntries.length - 1]!.sequence : since;
+    const nextCursor =
+      resultEntries.length > 0
+        ? resultEntries[resultEntries.length - 1]!.sequence
+        : since;
 
     return {
       entries: resultEntries,
@@ -544,8 +604,8 @@ export class OutputBuffer extends EventEmitter {
         totalBytes,
         estimatedTokens,
         linesShown: resultEntries.length,
-        linesOmitted
-      }
+        linesOmitted,
+      },
     };
   }
 
@@ -561,7 +621,7 @@ export class OutputBuffer extends EventEmitter {
    * 获取所有输出内容的文本形式
    */
   getAllText(): string {
-    return this.buffer.map(entry => entry.content).join('\n');
+    return this.buffer.map((entry) => entry.content).join("\n");
   }
 
   /**
@@ -569,7 +629,7 @@ export class OutputBuffer extends EventEmitter {
    */
   getText(since = 0, maxLines = 1000): string {
     const result = this.read({ since, maxLines });
-    return result.entries.map(entry => entry.content).join('\n');
+    return result.entries.map((entry) => entry.content).join("\n");
   }
 
   /**
@@ -580,13 +640,13 @@ export class OutputBuffer extends EventEmitter {
     this.buffer = [];
     this.currentLineNumber = 0;
     this.currentLineEntry = null;
-    this.spinnerBuffer = '';
+    this.spinnerBuffer = "";
     this.spinnerCount = 0;
     this.lastSpinnerFlush = 0;
     this.sequenceCounter = 0;
     this.oldestSequence = 0;
     this.latestSequence = 0;
-    this.emit('clear');
+    this.emit("clear");
   }
 
   /**
@@ -599,7 +659,10 @@ export class OutputBuffer extends EventEmitter {
       bufferedLines: this.buffer.length,
       maxSize: this.maxSize,
       oldestLine: this.buffer.length > 0 ? this.buffer[0]!.lineNumber : 0,
-      newestLine: this.buffer.length > 0 ? this.buffer[this.buffer.length - 1]!.lineNumber : 0
+      newestLine:
+        this.buffer.length > 0
+          ? this.buffer[this.buffer.length - 1]!.lineNumber
+          : 0,
     };
   }
 
@@ -608,7 +671,7 @@ export class OutputBuffer extends EventEmitter {
    */
   setMaxSize(maxSize: number): void {
     this.maxSize = maxSize;
-    
+
     // 如果当前缓冲区超过新的最大大小，删除最旧的条目
     this.trimBuffer();
   }
@@ -638,7 +701,7 @@ export class OutputBuffer extends EventEmitter {
       const flushEntries: OutputBufferEntry[] = [];
       this.flushSpinnerBuffer(flushEntries, true);
       if (flushEntries.length > 0) {
-        this.emit('data', flushEntries);
+        this.emit("data", flushEntries);
       }
     }
   }

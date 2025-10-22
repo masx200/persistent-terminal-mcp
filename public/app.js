@@ -4,7 +4,7 @@ let terminals = [];
 let ws = null;
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
   connectWebSocket();
   loadTerminals();
@@ -12,14 +12,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Setup event listeners
 function setupEventListeners() {
-  document.getElementById('create-terminal-btn').addEventListener('click', showCreateModal);
-  document.getElementById('refresh-btn').addEventListener('click', loadTerminals);
-  document.getElementById('cancel-btn').addEventListener('click', hideCreateModal);
-  document.getElementById('create-form').addEventListener('submit', handleCreateTerminal);
-  
+  document
+    .getElementById("create-terminal-btn")
+    .addEventListener("click", showCreateModal);
+  document
+    .getElementById("refresh-btn")
+    .addEventListener("click", loadTerminals);
+  document
+    .getElementById("cancel-btn")
+    .addEventListener("click", hideCreateModal);
+  document
+    .getElementById("create-form")
+    .addEventListener("submit", handleCreateTerminal);
+
   // Close modal on background click
-  document.getElementById('create-modal').addEventListener('click', (e) => {
-    if (e.target.id === 'create-modal') {
+  document.getElementById("create-modal").addEventListener("click", (e) => {
+    if (e.target.id === "create-modal") {
       hideCreateModal();
     }
   });
@@ -27,26 +35,26 @@ function setupEventListeners() {
 
 // WebSocket connection
 function connectWebSocket() {
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   const wsUrl = `${protocol}//${window.location.host}`;
-  
+
   ws = new WebSocket(wsUrl);
-  
+
   ws.onopen = () => {
-    console.log('WebSocket connected');
+    console.log("WebSocket connected");
   };
-  
+
   ws.onmessage = (event) => {
     const message = JSON.parse(event.data);
     handleWebSocketMessage(message);
   };
-  
+
   ws.onerror = (error) => {
-    console.error('WebSocket error:', error);
+    console.error("WebSocket error:", error);
   };
-  
+
   ws.onclose = () => {
-    console.log('WebSocket disconnected, reconnecting...');
+    console.log("WebSocket disconnected, reconnecting...");
     setTimeout(connectWebSocket, 2000);
   };
 }
@@ -54,9 +62,9 @@ function connectWebSocket() {
 // Handle WebSocket messages
 function handleWebSocketMessage(message) {
   switch (message.type) {
-    case 'terminal_created':
-    case 'terminal_killed':
-    case 'exit':
+    case "terminal_created":
+    case "terminal_killed":
+    case "exit":
       loadTerminals();
       break;
   }
@@ -65,31 +73,33 @@ function handleWebSocketMessage(message) {
 // Load terminals from API
 async function loadTerminals() {
   try {
-    const response = await fetch('/api/terminals');
+    const response = await fetch("/api/terminals");
     const data = await response.json();
     terminals = data.terminals || [];
     renderTerminals();
     updateStats();
   } catch (error) {
-    console.error('Failed to load terminals:', error);
-    showError('Failed to load terminals');
+    console.error("Failed to load terminals:", error);
+    showError("Failed to load terminals");
   }
 }
 
 // Render terminals
 function renderTerminals() {
-  const listEl = document.getElementById('terminal-list');
-  const emptyEl = document.getElementById('empty-state');
-  
+  const listEl = document.getElementById("terminal-list");
+  const emptyEl = document.getElementById("empty-state");
+
   if (terminals.length === 0) {
-    listEl.innerHTML = '';
-    emptyEl.classList.add('show');
+    listEl.innerHTML = "";
+    emptyEl.classList.add("show");
     return;
   }
-  
-  emptyEl.classList.remove('show');
-  
-  listEl.innerHTML = terminals.map(terminal => `
+
+  emptyEl.classList.remove("show");
+
+  listEl.innerHTML = terminals
+    .map(
+      (terminal) => `
     <div class="terminal-card">
       <div class="terminal-card-header">
         <span class="terminal-id" onclick="copyToClipboard('${terminal.id}')" title="Click to copy">
@@ -128,62 +138,64 @@ function renderTerminals() {
         </button>
       </div>
     </div>
-  `).join('');
+  `,
+    )
+    .join("");
 }
 
 // Update stats
 function updateStats() {
   const total = terminals.length;
-  const active = terminals.filter(t => t.status === 'active').length;
-  
-  document.getElementById('total-count').textContent = total;
-  document.getElementById('active-count').textContent = active;
+  const active = terminals.filter((t) => t.status === "active").length;
+
+  document.getElementById("total-count").textContent = total;
+  document.getElementById("active-count").textContent = active;
 }
 
 // Show create modal
 function showCreateModal() {
-  document.getElementById('create-modal').classList.add('show');
+  document.getElementById("create-modal").classList.add("show");
 }
 
 // Hide create modal
 function hideCreateModal() {
-  document.getElementById('create-modal').classList.remove('show');
-  document.getElementById('create-form').reset();
+  document.getElementById("create-modal").classList.remove("show");
+  document.getElementById("create-form").reset();
 }
 
 // Handle create terminal
 async function handleCreateTerminal(e) {
   e.preventDefault();
-  
-  const shell = document.getElementById('shell').value.trim();
-  const cwd = document.getElementById('cwd').value.trim();
-  
+
+  const shell = document.getElementById("shell").value.trim();
+  const cwd = document.getElementById("cwd").value.trim();
+
   const payload = {};
   if (shell) payload.shell = shell;
   if (cwd) payload.cwd = cwd;
-  
+
   try {
-    const response = await fetch('/api/terminals', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+    const response = await fetch("/api/terminals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
-    
+
     if (!response.ok) {
-      throw new Error('Failed to create terminal');
+      throw new Error("Failed to create terminal");
     }
-    
+
     const data = await response.json();
     hideCreateModal();
     loadTerminals();
-    
+
     // Optionally open the new terminal
-    if (confirm('Terminal created! Open it now?')) {
+    if (confirm("Terminal created! Open it now?")) {
       openTerminal(data.terminalId);
     }
   } catch (error) {
-    console.error('Failed to create terminal:', error);
-    alert('Failed to create terminal: ' + error.message);
+    console.error("Failed to create terminal:", error);
+    alert("Failed to create terminal: " + error.message);
   }
 }
 
@@ -194,44 +206,44 @@ function openTerminal(id) {
 
 // Kill terminal
 async function killTerminal(id) {
-  if (!confirm('Are you sure you want to kill this terminal?')) {
+  if (!confirm("Are you sure you want to kill this terminal?")) {
     return;
   }
-  
+
   try {
     const response = await fetch(`/api/terminals/${id}`, {
-      method: 'DELETE'
+      method: "DELETE",
     });
-    
+
     if (!response.ok) {
-      throw new Error('Failed to kill terminal');
+      throw new Error("Failed to kill terminal");
     }
-    
+
     loadTerminals();
   } catch (error) {
-    console.error('Failed to kill terminal:', error);
-    alert('Failed to kill terminal: ' + error.message);
+    console.error("Failed to kill terminal:", error);
+    alert("Failed to kill terminal: " + error.message);
   }
 }
 
 // Utility functions
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text).then(() => {
-    showNotification('Terminal ID copied to clipboard!');
+    showNotification("Terminal ID copied to clipboard!");
   });
 }
 
 function truncate(str, maxLen) {
   if (str.length <= maxLen) return str;
-  return str.substring(0, maxLen - 3) + '...';
+  return str.substring(0, maxLen - 3) + "...";
 }
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   const now = new Date();
   const diff = now - date;
-  
-  if (diff < 60000) return 'Just now';
+
+  if (diff < 60000) return "Just now";
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
   return date.toLocaleDateString();
@@ -239,7 +251,7 @@ function formatDate(dateStr) {
 
 function showNotification(message) {
   // Simple notification (you can enhance this)
-  const notification = document.createElement('div');
+  const notification = document.createElement("div");
   notification.textContent = message;
   notification.style.cssText = `
     position: fixed;
@@ -253,7 +265,7 @@ function showNotification(message) {
     z-index: 10000;
   `;
   document.body.appendChild(notification);
-  
+
   setTimeout(() => {
     notification.remove();
   }, 3000);
@@ -262,4 +274,3 @@ function showNotification(message) {
 function showError(message) {
   alert(message);
 }
-

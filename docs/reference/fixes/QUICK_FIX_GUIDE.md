@@ -3,6 +3,7 @@
 ## 🚨 问题
 
 在 Cursor 中使用 MCP 服务器时出现错误：
+
 ```
 [error] Client error for command Unexpected token 'T', "Terminal c"... is not valid JSON
 ```
@@ -47,6 +48,7 @@ node test-cursor-scenario.mjs
 ```
 
 **预期结果：**
+
 ```
 ✅ 所有测试通过！MCP 服务器工作正常，stdout 通道纯净
 ```
@@ -90,4 +92,3 @@ MCP_DEBUG = "true"
 ---
 
 **修复完成！现在可以在 Cursor 中正常使用 MCP 服务器了。** 🎉
-

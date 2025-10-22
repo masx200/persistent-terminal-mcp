@@ -44,6 +44,7 @@ MCP Client ↔ MCP Server ↔ Terminal Manager ↔ Node PTY ↔ Terminal Process
 ## 开发命令
 
 ### 构建和运行
+
 ```bash
 # 构建 TypeScript 项目
 npm run build
@@ -59,6 +60,7 @@ npm run dev:rest
 ```
 
 ### 测试
+
 ```bash
 # 运行所有测试
 npm test
@@ -79,6 +81,7 @@ npm test -- --coverage
 ```
 
 ### 示例和调试
+
 ```bash
 # 基本使用示例
 npm run example:basic
@@ -105,6 +108,7 @@ npm run test:tools
 ## 环境配置
 
 ### 必需环境变量
+
 ```bash
 # REST API 服务器端口
 REST_PORT=3001
@@ -122,6 +126,7 @@ LOG_LEVEL=info
 ```
 
 ### 开发配置
+
 ```bash
 # 启用 MCP 调试模式
 MCP_DEBUG=true
@@ -133,24 +138,28 @@ DEBUG=true
 ## 关键技术细节
 
 ### MCP 协议实现
+
 - 使用 `@modelcontextprotocol/sdk` 实现
 - 支持 stdio 传输模式
 - 保持 stdout 纯净，所有日志输出到 stderr
 - 实现完整的工具、资源、提示词和日志功能
 
 ### 终端会话管理
+
 - 基于 `node-pty` 实现真正的终端进程
 - 支持多平台 Shell（Windows PowerShell/CMD, macOS/Linux bash/zsh）
 - 循环缓冲区防内存泄漏
 - 智能进度动画压缩减少噪音
 
 ### 输出缓冲区系统
+
 - 支持多种读取模式：`full`、`head`、`tail`、`head-tail`
 - 增量读取支持
 - Token 数量估算
 - 自动清理机制
 
 ### WebSocket 通信
+
 - 实时推送终端输出
 - 双向通信支持
 - 连接状态管理
@@ -159,6 +168,7 @@ DEBUG=true
 ## 代码结构和约定
 
 ### 文件组织
+
 ```
 src/
 ├── index.ts              # 主入口，MCP stdio 服务器
@@ -175,12 +185,14 @@ src/
 ```
 
 ### TypeScript 配置
+
 - 目标：ES2022，模块系统：ESNext
 - 启用所有严格模式检查
 - 生成完整类型声明和源码映射
 - 支持现代 JavaScript 特性
 
 ### 测试策略
+
 - 单元测试：使用 Jest + ts-jest
 - 集成测试：独立的 MJS 脚本
 - 测试覆盖：HTML、LCOV 报告
@@ -189,17 +201,20 @@ src/
 ## 调试和故障排除
 
 ### 日志系统
+
 - MCP 日志输出到 stderr（避免污染 stdio）
 - 应用日志可配置级别
 - 调试模式支持详细输出
 
 ### 常见问题
+
 1. **缓冲区大小**：检查 `MAX_BUFFER_SIZE` 配置
 2. **会话超时**：确认 `SESSION_TIMEOUT` 设置
 3. **Shell 兼容性**：验证目标 Shell 的可用性
 4. **端口冲突**：调整 `REST_PORT` 配置
 
 ### 性能优化
+
 - 合理设置缓冲区大小
 - 使用增量读取模式
 - 定期清理过期会话
@@ -208,11 +223,13 @@ src/
 ## 平台兼容性
 
 ### 支持的操作系统
+
 - Windows (PowerShell, CMD)
 - macOS (bash, zsh)
 - Linux (bash, zsh)
 
 ### 客户端兼容性
+
 - Claude Desktop
 - Claude Code
 - Cursor
@@ -222,12 +239,14 @@ src/
 ## 部署注意事项
 
 ### 生产环境
+
 - 使用 `npm run build` 构建生产版本
 - 配置适当的环境变量
 - 监控进程健康状态
 - 配置日志轮转
 
 ### 安全考虑
+
 - 终端命令执行权限
 - 网络访问控制
 - 会话隔离和清理
@@ -236,6 +255,7 @@ src/
 ## 开发工作流
 
 ### 新功能开发
+
 1. 在 `types.ts` 中定义类型
 2. 实现核心逻辑（如 `terminal-manager.ts`）
 3. 添加 MCP 工具支持（`mcp-server.ts`）
@@ -243,12 +263,14 @@ src/
 5. 更新文档和示例
 
 ### 调试技巧
+
 - 使用 `MCP_DEBUG=true` 启用详细日志
 - 运行示例脚本测试功能
 - 使用 `tsx` 进行开发调试
 - 检查 Web UI 进行可视化调试
 
 ### 发布流程
+
 1. 更新版本号 (`package.json`)
 2. 运行完整测试套件
 3. 构建项目
@@ -258,18 +280,21 @@ src/
 ## 扩展和集成
 
 ### 添加新工具
+
 1. 在 `mcp-server.ts` 中注册工具
 2. 实现工具处理逻辑
 3. 添加类型定义
 4. 编写测试用例
 
 ### 自定义 Shell 支持
+
 1. 在 `terminal-manager.ts` 中添加 Shell 检测
 2. 更新平台特定配置
 3. 添加兼容性测试
 4. 更新文档
 
 ### 第三方集成
+
 - 使用 REST API 进行系统集成
 - 通过 WebSocket 进行实时通信
 - 利用 MCP 协议进行 AI 助手集成

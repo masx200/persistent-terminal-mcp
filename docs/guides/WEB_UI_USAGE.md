@@ -21,6 +21,7 @@ Web UI 是一个基于浏览器的终端管理界面，提供可视化的方式�
 ```
 
 工具参数：
+
 - `port` (可选): 指定端口号，默认从 3002 开始自动查找
 - `autoOpen` (可选): 是否自动打开浏览器，默认 true
 
@@ -31,6 +32,7 @@ npm run test:webui
 ```
 
 这会：
+
 1. 创建一个终端管理器
 2. 创建 2 个测试终端
 3. 启动 Web UI（端口 3002）
@@ -39,8 +41,8 @@ npm run test:webui
 ### 方法 3: 在代码中使用
 
 ```typescript
-import { WebUIManager } from './web-ui-manager.js';
-import { TerminalManager } from './terminal-manager.js';
+import { WebUIManager } from "./web-ui-manager.js";
+import { TerminalManager } from "./terminal-manager.js";
 
 const terminalManager = new TerminalManager();
 const webUiManager = new WebUIManager();
@@ -48,7 +50,7 @@ const webUiManager = new WebUIManager();
 const result = await webUiManager.start({
   port: 3002,
   autoOpen: true,
-  terminalManager
+  terminalManager,
 });
 
 console.log(`Web UI 已启动: ${result.url}`);
@@ -63,6 +65,7 @@ console.log(`Web UI 已启动: ${result.url}`);
 访问 `http://localhost:3002/` 查看所有终端。
 
 **功能**：
+
 - 📊 **统计信息**: 显示总终端数和活跃终端数
 - 📋 **终端卡片**: 每个终端显示：
   - Terminal ID（点击可复制）
@@ -73,6 +76,7 @@ console.log(`Web UI 已启动: ${result.url}`);
 - ➕ **创建终端**: 创建新的终端会话
 
 **操作**：
+
 - 点击 **Open** 按钮查看终端详情
 - 点击 **Kill** 按钮终止终端
 - 点击 **+ New Terminal** 创建新终端
@@ -82,6 +86,7 @@ console.log(`Web UI 已启动: ${result.url}`);
 访问 `http://localhost:3002/terminal/{terminalId}` 查看特定终端。
 
 **功能**：
+
 - 🖥️ **终端输出**: 使用 xterm.js 渲染，支持 ANSI 颜色
 - ⚡ **实时更新**: WebSocket 推送，输出实时显示
 - ⌨️ **命令输入**: 在输入框中输入命令并发送
@@ -89,6 +94,7 @@ console.log(`Web UI 已启动: ${result.url}`);
 - 🎨 **状态标签**: 实时显示终端状态
 
 **操作**：
+
 - 在输入框中输入命令，按 Enter 或点击 **Send** 发送
 - 点击 **Clear** 清空终端显示（不影响实际输出）
 - 点击 **Kill Terminal** 终止终端
@@ -99,6 +105,7 @@ console.log(`Web UI 已启动: ${result.url}`);
 点击 **+ New Terminal** 按钮，在弹出的对话框中：
 
 **可选参数**：
+
 - **Shell**: 指定 shell 类型（如 `/bin/bash`、`/bin/zsh`）
 - **Working Directory**: 指定工作目录
 
@@ -160,6 +167,7 @@ A: Web UI 会自动查找下一个可用端口（3002-3101）。如果所有端�
 ### Q: WebSocket 连接失败怎么办？
 
 A: 检查：
+
 1. Web 服务器是否正常运行
 2. 浏览器控制台是否有错误
 3. 防火墙是否阻止了连接
@@ -172,7 +180,8 @@ A: xterm.js 支持大部分 ANSI 转义序列，但某些特殊应用可能显�
 
 ### Q: 如何关闭 Web UI？
 
-A: 
+A:
+
 - 如果通过测试脚本启动：按 Ctrl+C
 - 如果通过 MCP 工具启动：关闭 MCP 服务器时会自动清理
 
@@ -247,4 +256,3 @@ PTY Processes
 - 查看 [Web UI 功能文档](../features/WEB_UI_FEATURE.md) 了解技术细节
 - 查看 [API 文档](../reference/API.md) 了解 REST API
 - 查看 [故障排查指南](TROUBLESHOOTING.md) 解决问题
-

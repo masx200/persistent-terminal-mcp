@@ -1,13 +1,13 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
 import {
   CallToolResult,
   GetPromptResult,
-  ReadResourceResult
-} from '@modelcontextprotocol/sdk/types.js';
-import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { TerminalManager } from './terminal-manager.js';
-import { WebUIManager } from './web-ui-manager.js';
+  ReadResourceResult,
+} from "@modelcontextprotocol/sdk/types.js";
+import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { TerminalManager } from "./terminal-manager.js";
+import { WebUIManager } from "./web-ui-manager.js";
 import {
   CreateTerminalInput,
   CreateTerminalResult,
@@ -19,10 +19,10 @@ import {
   KillTerminalResult,
   TerminalStatsInput,
   TerminalStatsResult,
-  TerminalCreateOptions
-} from './types.js';
-import { promises as fs } from 'fs';
-import * as path from 'path';
+  TerminalCreateOptions,
+} from "./types.js";
+import { promises as fs } from "fs";
+import * as path from "path";
 
 /**
  * MCP 服务器实现
@@ -37,33 +37,33 @@ export class PersistentTerminalMcpServer {
     // 创建 MCP 服务器
     this.server = new McpServer(
       {
-        name: 'persistent-terminal-server',
-        version: '1.0.0',
-        description: 'MCP server for managing persistent terminal sessions',
+        name: "persistent-terminal-server",
+        version: "1.0.0",
+        description: "MCP server for managing persistent terminal sessions",
         icons: [
           {
-            src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIgNEMyIDIuODk1NDMgMi44OTU0MyAyIDQgMkgyMEMyMS4xMDQ2IDIgMjIgMi44OTU0MyAyMiA0VjIwQzIyIDIxLjEwNDYgMjEuMTA0NiAyMiAyMCAyMkg0QzIuODk1NDMgMjIgMiAyMS4xMDQ2IDIgMjBWNFoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxwYXRoIGQ9Ik02IDhMMTAgMTJMNiAxNiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTIgMTZIMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+',
-            sizes: ['24x24'],
-            mimeType: 'image/svg+xml'
-          }
-        ]
+            src: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIgNEMyIDIuODk1NDMgMi44OTU0MyAyIDQgMkgyMEMyMS4xMDQ2IDIgMjIgMi44OTU0MyAyMiA0VjIwQzIyIDIxLjEwNDYgMjEuMTA0NiAyMiAyMCAyMkg0QzIuODk1NDMgMjIgMiAyMS4xMDQ2IDIgMjBWNFoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxwYXRoIGQ9Ik02IDhMMTAgMTJMNiAxNiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTIgMTZIMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+",
+            sizes: ["24x24"],
+            mimeType: "image/svg+xml",
+          },
+        ],
       },
       {
         capabilities: {
           tools: {},
           resources: {},
           prompts: {},
-          logging: {}
-        }
-      }
+          logging: {},
+        },
+      },
     );
 
     // 创建终端管理器
     this.terminalManager = new TerminalManager({
-      maxBufferSize: parseInt(process.env.MAX_BUFFER_SIZE || '10000'),
-      sessionTimeout: parseInt(process.env.SESSION_TIMEOUT || '86400000'), // 24 hours
-      compactAnimations: process.env.COMPACT_ANIMATIONS !== 'false', // Default true
-      animationThrottleMs: parseInt(process.env.ANIMATION_THROTTLE_MS || '100')
+      maxBufferSize: parseInt(process.env.MAX_BUFFER_SIZE || "10000"),
+      sessionTimeout: parseInt(process.env.SESSION_TIMEOUT || "86400000"), // 24 hours
+      compactAnimations: process.env.COMPACT_ANIMATIONS !== "false", // Default true
+      animationThrottleMs: parseInt(process.env.ANIMATION_THROTTLE_MS || "100"),
     });
 
     // 创建 Web UI 管理器
@@ -78,18 +78,21 @@ export class PersistentTerminalMcpServer {
   /**
    * 创建终端并返回统一格式的结果
    */
-  private async createTerminalResponse(options: TerminalCreateOptions, source: 'default' | 'basic' = 'default'): Promise<CallToolResult> {
+  private async createTerminalResponse(
+    options: TerminalCreateOptions,
+    source: "default" | "basic" = "default",
+  ): Promise<CallToolResult> {
     const terminalId = await this.terminalManager.createTerminal({
       shell: options.shell,
       cwd: options.cwd,
       env: options.env,
       cols: options.cols,
-      rows: options.rows
+      rows: options.rows,
     });
 
     const session = this.terminalManager.getTerminalInfo(terminalId);
     if (!session) {
-      throw new Error('Failed to retrieve session info');
+      throw new Error("Failed to retrieve session info");
     }
 
     const result: CreateTerminalResult = {
@@ -97,37 +100,38 @@ export class PersistentTerminalMcpServer {
       status: session.status,
       pid: session.pid,
       shell: session.shell,
-      cwd: session.cwd
+      cwd: session.cwd,
     };
 
-    const header = source === 'basic'
-      ? 'Terminal created successfully via basic workflow!'
-      : 'Terminal created successfully!';
+    const header =
+      source === "basic"
+        ? "Terminal created successfully via basic workflow!"
+        : "Terminal created successfully!";
 
     const outputLines = [
       `${header}`,
-      '',
+      "",
       `Terminal ID: ${result.terminalId}`,
       `PID: ${result.pid}`,
       `Shell: ${result.shell}`,
       `Working Directory: ${result.cwd}`,
-      `Status: ${result.status}`
+      `Status: ${result.status}`,
     ];
 
     return {
       content: [
         {
-          type: 'text',
-          text: outputLines.join('\n')
-        }
+          type: "text",
+          text: outputLines.join("\n"),
+        },
       ],
       structuredContent: {
         terminalId: result.terminalId,
         pid: result.pid,
         shell: result.shell,
         cwd: result.cwd,
-        status: result.status
-      }
+        status: result.status,
+      },
     } as CallToolResult;
   }
 
@@ -141,7 +145,7 @@ export class PersistentTerminalMcpServer {
   }): Promise<CallToolResult> {
     const workingDir = params.cwd || process.cwd();
     const timeoutMs = params.timeout || 600000; // 默认 10 分钟
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const reportFileName = `codex-fix-${timestamp}.md`;
     const reportPath = `docs/${reportFileName}`;
 
@@ -206,18 +210,18 @@ Fix tool: OpenAI Codex
 
       // 将问题描述写入 MD 文档，避免 shell 转义问题
       const promptFileName = `codex-bug-description-${timestamp}.md`;
-      const promptFile = path.join(workingDir, 'docs', promptFileName);
+      const promptFile = path.join(workingDir, "docs", promptFileName);
 
       // 确保 docs 目录存在
-      await fs.mkdir(path.join(workingDir, 'docs'), { recursive: true });
+      await fs.mkdir(path.join(workingDir, "docs"), { recursive: true });
 
       // 写入问题描述文档
-      await fs.writeFile(promptFile, finalPrompt, 'utf-8');
+      await fs.writeFile(promptFile, finalPrompt, "utf-8");
 
       // 创建专用终端
       const terminalId = await this.terminalManager.createTerminal({
         cwd: workingDir,
-        shell: '/bin/bash'
+        shell: "/bin/bash",
       });
 
       // 构建 Codex 命令 - 使用非交互模式 exec，从 MD 文档读取问题描述
@@ -227,7 +231,7 @@ Fix tool: OpenAI Codex
       // 执行命令
       await this.terminalManager.writeToTerminal({
         terminalId,
-        input: codexCmd
+        input: codexCmd,
       });
 
       // 智能等待完成
@@ -237,13 +241,13 @@ Fix tool: OpenAI Codex
       const stableThreshold = 3; // 连续3次输出不变则认为完成
 
       while (Date.now() - startTime < timeoutMs) {
-        await new Promise(resolve => setTimeout(resolve, 5000)); // 每5秒检查
+        await new Promise((resolve) => setTimeout(resolve, 5000)); // 每5秒检查
 
         // 只读取最后 50 行来检查状态，避免读取过多数据
         const result = await this.terminalManager.readFromTerminal({
           terminalId,
-          mode: 'tail',
-          tailLines: 50
+          mode: "tail",
+          tailLines: 50,
         });
 
         // 检查输出是否稳定
@@ -258,9 +262,11 @@ Fix tool: OpenAI Codex
         }
 
         // 检查是否有明确的完成标志
-        if (result.output.includes('Task completed') ||
-            result.output.includes('修复完成') ||
-            result.output.includes('Fix completed')) {
+        if (
+          result.output.includes("Task completed") ||
+          result.output.includes("修复完成") ||
+          result.output.includes("Fix completed")
+        ) {
           break;
         }
       }
@@ -270,18 +276,18 @@ Fix tool: OpenAI Codex
       // 读取最终输出（只读取最后 50 行，避免上下文过长）
       const finalResult = await this.terminalManager.readFromTerminal({
         terminalId,
-        mode: 'tail',
-        tailLines: 50
+        mode: "tail",
+        tailLines: 50,
       });
 
       // 检查报告是否生成
       const fullReportPath = path.join(workingDir, reportPath);
 
       let reportExists = false;
-      let reportContent = '';
+      let reportContent = "";
 
       try {
-        reportContent = await fs.readFile(fullReportPath, 'utf-8');
+        reportContent = await fs.readFile(fullReportPath, "utf-8");
         reportExists = true;
       } catch (error) {
         // 报告不存在
@@ -305,12 +311,12 @@ Fix tool: OpenAI Codex
         resultMessage += `4. Provide the testing recommendations from the report\n`;
         resultMessage += `5. Ask the user if they want to review the changes\n\n`;
         resultMessage += `📋 Report Preview (first 500 chars):\n`;
-        resultMessage += `${'='.repeat(60)}\n`;
+        resultMessage += `${"=".repeat(60)}\n`;
         resultMessage += reportContent.substring(0, 500);
         if (reportContent.length > 500) {
           resultMessage += `\n... (truncated, read full report for details)\n`;
         }
-        resultMessage += `\n${'='.repeat(60)}\n`;
+        resultMessage += `\n${"=".repeat(60)}\n`;
       } else {
         resultMessage += `⚠️ Warning: Fix Report Not Found!\n\n`;
         resultMessage += `Expected location: ${reportPath}\n\n`;
@@ -321,11 +327,11 @@ Fix tool: OpenAI Codex
         resultMessage += `📋 Please check the Codex output below for details.\n`;
       }
 
-      resultMessage += `\n${'='.repeat(60)}\n`;
+      resultMessage += `\n${"=".repeat(60)}\n`;
       resultMessage += `📺 Codex Terminal Output:\n`;
-      resultMessage += `${'='.repeat(60)}\n`;
+      resultMessage += `${"=".repeat(60)}\n`;
       resultMessage += finalResult.output;
-      resultMessage += `\n${'='.repeat(60)}\n`;
+      resultMessage += `\n${"=".repeat(60)}\n`;
 
       // 添加问题描述文档的信息
       resultMessage += `\n📝 Bug Description Document: docs/${promptFileName}\n`;
@@ -334,9 +340,9 @@ Fix tool: OpenAI Codex
       return {
         content: [
           {
-            type: 'text',
-            text: resultMessage
-          }
+            type: "text",
+            text: resultMessage,
+          },
         ],
         structuredContent: {
           terminalId,
@@ -346,18 +352,18 @@ Fix tool: OpenAI Codex
           executionTime,
           timedOut: executionTime >= timeoutMs,
           output: finalResult.output,
-          reportPreview: reportExists ? reportContent.substring(0, 500) : null
-        }
+          reportPreview: reportExists ? reportContent.substring(0, 500) : null,
+        },
       } as CallToolResult;
     } catch (error) {
       return {
         content: [
           {
-            type: 'text',
-            text: `Error executing Codex bug fix: ${error instanceof Error ? error.message : String(error)}`
-          }
+            type: "text",
+            text: `Error executing Codex bug fix: ${error instanceof Error ? error.message : String(error)}`,
+          },
         ],
-        isError: true
+        isError: true,
       } as CallToolResult;
     }
   }
@@ -368,16 +374,22 @@ Fix tool: OpenAI Codex
   private setupTools(): void {
     // 创建终端工具
     this.server.tool(
-      'create_terminal',
-      'Create a new persistent terminal session',
+      "create_terminal",
+      "Create a new persistent terminal session",
       {
-        shell: z.string().optional().describe('Shell to use (default: system default)'),
-        cwd: z.string().optional().describe('Working directory (default: current directory)'),
-        env: z.record(z.string()).optional().describe('Environment variables')
+        shell: z
+          .string()
+          .optional()
+          .describe("Shell to use (default: system default)"),
+        cwd: z
+          .string()
+          .optional()
+          .describe("Working directory (default: current directory)"),
+        env: z.record(z.string()).optional().describe("Environment variables"),
       },
       {
-        title: 'Create Terminal',
-        readOnlyHint: false
+        title: "Create Terminal",
+        readOnlyHint: false,
       },
       async ({ shell, cwd, env }): Promise<CallToolResult> => {
         try {
@@ -385,77 +397,92 @@ Fix tool: OpenAI Codex
             {
               shell: shell || undefined,
               cwd: cwd || undefined,
-              env: env || undefined
+              env: env || undefined,
             },
-            'default'
+            "default",
           );
         } catch (error) {
           return {
             content: [
               {
-                type: 'text',
-                text: `Error creating terminal: ${error instanceof Error ? error.message : String(error)}`
-              }
+                type: "text",
+                text: `Error creating terminal: ${error instanceof Error ? error.message : String(error)}`,
+              },
             ],
-            isError: true
+            isError: true,
           };
         }
-      }
+      },
     );
 
     // 基础版创建终端工具，适配无法传递复杂对象参数的客户端
     this.server.tool(
-      'create_terminal_basic',
-      'Create a new persistent terminal session (shell and cwd only). Useful for clients that cannot send env objects.',
+      "create_terminal_basic",
+      "Create a new persistent terminal session (shell and cwd only). Useful for clients that cannot send env objects.",
       {
-        shell: z.string().optional().describe('Shell to use (default: system default)'),
-        cwd: z.string().optional().describe('Working directory (default: current directory)')
+        shell: z
+          .string()
+          .optional()
+          .describe("Shell to use (default: system default)"),
+        cwd: z
+          .string()
+          .optional()
+          .describe("Working directory (default: current directory)"),
       },
       {
-        title: 'Create Terminal (Basic)',
-        readOnlyHint: false
+        title: "Create Terminal (Basic)",
+        readOnlyHint: false,
       },
       async ({ shell, cwd }): Promise<CallToolResult> => {
         try {
           return await this.createTerminalResponse(
             {
               shell: shell || undefined,
-              cwd: cwd || undefined
+              cwd: cwd || undefined,
             },
-            'basic'
+            "basic",
           );
         } catch (error) {
           return {
             content: [
               {
-                type: 'text',
-                text: `Error creating terminal: ${error instanceof Error ? error.message : String(error)}`
-              }
+                type: "text",
+                text: `Error creating terminal: ${error instanceof Error ? error.message : String(error)}`,
+              },
             ],
-            isError: true
+            isError: true,
           };
         }
-      }
+      },
     );
 
     // 写入终端工具
     this.server.tool(
-      'write_terminal',
-      'Write input to a terminal session. Commands add a newline by default, but you can disable that for raw control sequences.',
+      "write_terminal",
+      "Write input to a terminal session. Commands add a newline by default, but you can disable that for raw control sequences.",
       {
-        terminalId: z.string().describe('Terminal session ID'),
-        input: z.string().describe('Input to send to the terminal. Newline will be automatically added if not present to execute the command.'),
-        appendNewline: z.boolean().optional().describe('Whether to automatically append a newline (default: true). Set to false for raw control sequences like Ctrl+U or backspace.')
+        terminalId: z.string().describe("Terminal session ID"),
+        input: z
+          .string()
+          .describe(
+            "Input to send to the terminal. Newline will be automatically added if not present to execute the command.",
+          ),
+        appendNewline: z
+          .boolean()
+          .optional()
+          .describe(
+            "Whether to automatically append a newline (default: true). Set to false for raw control sequences like Ctrl+U or backspace.",
+          ),
       },
       {
-        title: 'Write to Terminal',
-        readOnlyHint: false
+        title: "Write to Terminal",
+        readOnlyHint: false,
       },
       async ({ terminalId, input, appendNewline }): Promise<CallToolResult> => {
         try {
           const writeOptions: any = {
             terminalId,
-            input
+            input,
           };
           if (appendNewline !== undefined) {
             writeOptions.appendNewline = appendNewline;
@@ -465,43 +492,77 @@ Fix tool: OpenAI Codex
           return {
             content: [
               {
-                type: 'text',
-                text: `Input sent to terminal ${terminalId} successfully.`
-              }
-            ]
+                type: "text",
+                text: `Input sent to terminal ${terminalId} successfully.`,
+              },
+            ],
           };
         } catch (error) {
           return {
             content: [
               {
-                type: 'text',
-                text: `Error writing to terminal: ${error instanceof Error ? error.message : String(error)}`
-              }
+                type: "text",
+                text: `Error writing to terminal: ${error instanceof Error ? error.message : String(error)}`,
+              },
             ],
-            isError: true
+            isError: true,
           };
         }
-      }
+      },
     );
 
     // 读取终端工具（增强版）
     this.server.tool(
-      'read_terminal',
-      'Read output from a terminal session with smart truncation options',
+      "read_terminal",
+      "Read output from a terminal session with smart truncation options",
       {
-        terminalId: z.string().describe('Terminal session ID'),
-        since: z.number().optional().describe('Line number to start reading from (default: 0)'),
-        maxLines: z.number().optional().describe('Maximum number of lines to read (default: 1000)'),
-        mode: z.enum(['full', 'head', 'tail', 'head-tail']).optional().describe('Reading mode: full (default), head (first N lines), tail (last N lines), or head-tail (first + last N lines)'),
-        headLines: z.number().optional().describe('Number of lines to show from the beginning when using head or head-tail mode (default: 50)'),
-        tailLines: z.number().optional().describe('Number of lines to show from the end when using tail or head-tail mode (default: 50)'),
-        stripSpinner: z.boolean().optional().describe('Whether to strip spinner/animation frames (uses global setting if not specified)')
+        terminalId: z.string().describe("Terminal session ID"),
+        since: z
+          .number()
+          .optional()
+          .describe("Line number to start reading from (default: 0)"),
+        maxLines: z
+          .number()
+          .optional()
+          .describe("Maximum number of lines to read (default: 1000)"),
+        mode: z
+          .enum(["full", "head", "tail", "head-tail"])
+          .optional()
+          .describe(
+            "Reading mode: full (default), head (first N lines), tail (last N lines), or head-tail (first + last N lines)",
+          ),
+        headLines: z
+          .number()
+          .optional()
+          .describe(
+            "Number of lines to show from the beginning when using head or head-tail mode (default: 50)",
+          ),
+        tailLines: z
+          .number()
+          .optional()
+          .describe(
+            "Number of lines to show from the end when using tail or head-tail mode (default: 50)",
+          ),
+        stripSpinner: z
+          .boolean()
+          .optional()
+          .describe(
+            "Whether to strip spinner/animation frames (uses global setting if not specified)",
+          ),
       },
       {
-        title: 'Read Terminal Output',
-        readOnlyHint: true
+        title: "Read Terminal Output",
+        readOnlyHint: true,
       },
-      async ({ terminalId, since, maxLines, mode, headLines, tailLines, stripSpinner }): Promise<CallToolResult> => {
+      async ({
+        terminalId,
+        since,
+        maxLines,
+        mode,
+        headLines,
+        tailLines,
+        stripSpinner,
+      }): Promise<CallToolResult> => {
         try {
           const result = await this.terminalManager.readFromTerminal({
             terminalId,
@@ -510,7 +571,7 @@ Fix tool: OpenAI Codex
             mode: mode || undefined,
             headLines: headLines || undefined,
             tailLines: tailLines || undefined,
-            stripSpinner: stripSpinner
+            stripSpinner: stripSpinner,
           });
 
           let outputText = `Terminal Output (${terminalId}):\n\n${result.output}\n\n--- End of Output ---\n`;
@@ -554,92 +615,98 @@ Fix tool: OpenAI Codex
           return {
             content: [
               {
-                type: 'text',
-                text: outputText
-              }
-            ]
+                type: "text",
+                text: outputText,
+              },
+            ],
           };
         } catch (error) {
           return {
             content: [
               {
-                type: 'text',
-                text: `Error reading from terminal: ${error instanceof Error ? error.message : String(error)}`
-              }
+                type: "text",
+                text: `Error reading from terminal: ${error instanceof Error ? error.message : String(error)}`,
+              },
             ],
-            isError: true
+            isError: true,
           };
         }
-      }
+      },
     );
 
     // 列出终端工具
     this.server.tool(
-      'list_terminals',
-      'List all active terminal sessions',
+      "list_terminals",
+      "List all active terminal sessions",
       {},
       {
-        title: 'List Terminals',
-        readOnlyHint: true
+        title: "List Terminals",
+        readOnlyHint: true,
       },
       async (): Promise<CallToolResult> => {
         try {
           const result = await this.terminalManager.listTerminals();
-          
+
           if (result.terminals.length === 0) {
             return {
               content: [
                 {
-                  type: 'text',
-                  text: 'No active terminal sessions found.'
-                }
-              ]
+                  type: "text",
+                  text: "No active terminal sessions found.",
+                },
+              ],
             };
           }
 
-          const terminalList = result.terminals.map(terminal => 
-            `ID: ${terminal.id}\n` +
-            `PID: ${terminal.pid}\n` +
-            `Shell: ${terminal.shell}\n` +
-            `Working Directory: ${terminal.cwd}\n` +
-            `Created: ${terminal.created}\n` +
-            `Last Activity: ${terminal.lastActivity}\n` +
-            `Status: ${terminal.status}\n`
-          ).join('\n---\n');
+          const terminalList = result.terminals
+            .map(
+              (terminal) =>
+                `ID: ${terminal.id}\n` +
+                `PID: ${terminal.pid}\n` +
+                `Shell: ${terminal.shell}\n` +
+                `Working Directory: ${terminal.cwd}\n` +
+                `Created: ${terminal.created}\n` +
+                `Last Activity: ${terminal.lastActivity}\n` +
+                `Status: ${terminal.status}\n`,
+            )
+            .join("\n---\n");
 
           return {
             content: [
               {
-                type: 'text',
-                text: `Active Terminal Sessions (${result.terminals.length}):\n\n${terminalList}`
-              }
-            ]
+                type: "text",
+                text: `Active Terminal Sessions (${result.terminals.length}):\n\n${terminalList}`,
+              },
+            ],
           };
         } catch (error) {
           return {
             content: [
               {
-                type: 'text',
-                text: `Error listing terminals: ${error instanceof Error ? error.message : String(error)}`
-              }
+                type: "text",
+                text: `Error listing terminals: ${error instanceof Error ? error.message : String(error)}`,
+              },
             ],
-            isError: true
+            isError: true,
           };
         }
-      }
+      },
     );
 
     // 终止终端工具
     this.server.tool(
-      'kill_terminal',
-      'Terminate a terminal session',
+      "kill_terminal",
+      "Terminate a terminal session",
       {
-        terminalId: z.string().describe('Terminal session ID'),
-        signal: z.string().optional().describe('Signal to send (default: SIGTERM)')
+        terminalId: z.string().describe("Terminal session ID"),
+        signal: z
+          .string()
+          .optional()
+          .describe("Signal to send (default: SIGTERM)"),
       },
       {
-        title: 'Kill Terminal',
-        readOnlyHint: false
+        title: "Kill Terminal",
+        readOnlyHint: false,
       },
       async ({ terminalId, signal }): Promise<CallToolResult> => {
         try {
@@ -648,39 +715,40 @@ Fix tool: OpenAI Codex
           return {
             content: [
               {
-                type: 'text',
-                text: `Terminal ${terminalId} terminated successfully.`
-              }
-            ]
+                type: "text",
+                text: `Terminal ${terminalId} terminated successfully.`,
+              },
+            ],
           };
         } catch (error) {
           return {
             content: [
               {
-                type: 'text',
-                text: `Error terminating terminal: ${error instanceof Error ? error.message : String(error)}`
-              }
+                type: "text",
+                text: `Error terminating terminal: ${error instanceof Error ? error.message : String(error)}`,
+              },
             ],
-            isError: true
+            isError: true,
           };
         }
-      }
+      },
     );
 
     // 获取终端统计信息工具
     this.server.tool(
-      'get_terminal_stats',
-      'Get detailed statistics about a terminal session including size, tokens, etc.',
+      "get_terminal_stats",
+      "Get detailed statistics about a terminal session including size, tokens, etc.",
       {
-        terminalId: z.string().describe('Terminal session ID')
+        terminalId: z.string().describe("Terminal session ID"),
       },
       {
-        title: 'Get Terminal Statistics',
-        readOnlyHint: true
+        title: "Get Terminal Statistics",
+        readOnlyHint: true,
       },
       async ({ terminalId }): Promise<CallToolResult> => {
         try {
-          const result = await this.terminalManager.getTerminalStats(terminalId);
+          const result =
+            await this.terminalManager.getTerminalStats(terminalId);
 
           let statsText = `Terminal Statistics (${terminalId}):\n\n`;
           statsText += `Total Lines: ${result.totalLines}\n`;
@@ -689,99 +757,114 @@ Fix tool: OpenAI Codex
           statsText += `Buffer Size: ${result.bufferSize} lines\n`;
           statsText += `Oldest Line: ${result.oldestLine}\n`;
           statsText += `Newest Line: ${result.newestLine}\n`;
-          statsText += `Status: ${result.isActive ? 'Active' : 'Inactive'}\n`;
+          statsText += `Status: ${result.isActive ? "Active" : "Inactive"}\n`;
 
           // 添加一些有用的建议
           if (result.estimatedTokens > 8000) {
             statsText += `\n⚠️  Large output detected! Consider using read_terminal with mode="head-tail" to avoid token limits.`;
           }
 
-          if (result.totalBytes > 1024 * 1024) { // 1MB
-            statsText += `\n⚠️  Output size is ${Math.round(result.totalBytes / 1024 / 1024 * 100) / 100}MB. Consider using truncation options.`;
+          if (result.totalBytes > 1024 * 1024) {
+            // 1MB
+            statsText += `\n⚠️  Output size is ${Math.round((result.totalBytes / 1024 / 1024) * 100) / 100}MB. Consider using truncation options.`;
           }
 
           return {
             content: [
               {
-                type: 'text',
-                text: statsText
-              }
-            ]
+                type: "text",
+                text: statsText,
+              },
+            ],
           };
         } catch (error) {
           return {
             content: [
               {
-                type: 'text',
-                text: `Error getting terminal stats: ${error instanceof Error ? error.message : String(error)}`
-              }
+                type: "text",
+                text: `Error getting terminal stats: ${error instanceof Error ? error.message : String(error)}`,
+              },
             ],
-            isError: true
+            isError: true,
           };
         }
-      }
+      },
     );
 
     // 等待输出稳定工具
     this.server.tool(
-      'wait_for_output',
-      'Wait for terminal output to stabilize. Useful after running commands to ensure all output is captured.',
+      "wait_for_output",
+      "Wait for terminal output to stabilize. Useful after running commands to ensure all output is captured.",
       {
-        terminalId: z.string().describe('Terminal session ID'),
-        timeout: z.number().optional().describe('Maximum time to wait in milliseconds (default: 5000)'),
-        stableTime: z.number().optional().describe('Time with no new output to consider stable in milliseconds (default: 500)')
+        terminalId: z.string().describe("Terminal session ID"),
+        timeout: z
+          .number()
+          .optional()
+          .describe("Maximum time to wait in milliseconds (default: 5000)"),
+        stableTime: z
+          .number()
+          .optional()
+          .describe(
+            "Time with no new output to consider stable in milliseconds (default: 500)",
+          ),
       },
       {
-        title: 'Wait for Output',
-        readOnlyHint: true
+        title: "Wait for Output",
+        readOnlyHint: true,
       },
       async ({ terminalId, timeout, stableTime }): Promise<CallToolResult> => {
         try {
           await this.terminalManager.waitForOutputStable(
             terminalId,
             timeout || 5000,
-            stableTime || 500
+            stableTime || 500,
           );
 
           return {
             content: [
               {
-                type: 'text',
-                text: `Output for terminal ${terminalId} has stabilized.`
-              }
-            ]
+                type: "text",
+                text: `Output for terminal ${terminalId} has stabilized.`,
+              },
+            ],
           };
         } catch (error) {
           return {
             content: [
               {
-                type: 'text',
-                text: `Error waiting for output: ${error instanceof Error ? error.message : String(error)}`
-              }
+                type: "text",
+                text: `Error waiting for output: ${error instanceof Error ? error.message : String(error)}`,
+              },
             ],
-            isError: true
+            isError: true,
           };
         }
-      }
+      },
     );
 
     // 打开终端管理 UI 工具
     this.server.tool(
-      'open_terminal_ui',
-      'Open a web-based terminal management UI in the browser. This provides a visual interface to manage all terminal sessions.',
+      "open_terminal_ui",
+      "Open a web-based terminal management UI in the browser. This provides a visual interface to manage all terminal sessions.",
       {
-        port: z.number().optional().describe('Port for the web server (default: auto-detect from 3002)'),
-        autoOpen: z.boolean().optional().describe('Automatically open browser (default: true)')
+        port: z
+          .number()
+          .optional()
+          .describe("Port for the web server (default: auto-detect from 3002)"),
+        autoOpen: z
+          .boolean()
+          .optional()
+          .describe("Automatically open browser (default: true)"),
       },
       {
-        title: 'Open Terminal UI',
-        readOnlyHint: true
+        title: "Open Terminal UI",
+        readOnlyHint: true,
       },
       async ({ port, autoOpen }): Promise<CallToolResult> => {
         try {
           const startOptions: any = {
             autoOpen: autoOpen !== false,
-            terminalManager: this.terminalManager
+            terminalManager: this.terminalManager,
           };
           if (port !== undefined) {
             startOptions.port = port;
@@ -789,42 +872,42 @@ Fix tool: OpenAI Codex
           const result = await this.webUiManager.start(startOptions);
 
           const lines = [
-            'Terminal UI started successfully!',
-            '',
+            "Terminal UI started successfully!",
+            "",
             `🌐 URL: ${result.url}`,
             `📡 Port: ${result.port}`,
             `📊 Mode: ${result.mode}`,
-            '',
+            "",
             result.autoOpened
-              ? '✓ Browser opened automatically'
-              : '→ Please open the URL in your browser manually'
+              ? "✓ Browser opened automatically"
+              : "→ Please open the URL in your browser manually",
           ];
 
           return {
             content: [
               {
-                type: 'text',
-                text: lines.join('\n')
-              }
-            ]
+                type: "text",
+                text: lines.join("\n"),
+              },
+            ],
           };
         } catch (error) {
           return {
             content: [
               {
-                type: 'text',
-                text: `Error starting terminal UI: ${error instanceof Error ? error.message : String(error)}`
-              }
+                type: "text",
+                text: `Error starting terminal UI: ${error instanceof Error ? error.message : String(error)}`,
+              },
             ],
-            isError: true
+            isError: true,
           };
         }
-      }
+      },
     );
 
     // Codex Bug Fix Tool
     this.server.tool(
-      'fix_bug_with_codex',
+      "fix_bug_with_codex",
       `Use OpenAI Codex CLI to automatically fix bugs with FULL SYSTEM ACCESS.
 
 WARNING CRITICAL: This tool gives Codex COMPLETE control over the codebase!
@@ -940,19 +1023,26 @@ MUST INCLUDE:
 - Context (background information)
 
 The more detailed, the better the fix!`),
-        cwd: z.string().optional().describe('Working directory (default: current directory)'),
-        timeout: z.number().optional().describe('Timeout in milliseconds (default: 600000 = 10 minutes)')
+        cwd: z
+          .string()
+          .optional()
+          .describe("Working directory (default: current directory)"),
+        timeout: z
+          .number()
+          .optional()
+          .describe("Timeout in milliseconds (default: 600000 = 10 minutes)"),
       },
       {
-        title: 'Fix Bug with Codex (Full Access)',
-        readOnlyHint: false
+        title: "Fix Bug with Codex (Full Access)",
+        readOnlyHint: false,
       },
       async ({ description, cwd, timeout }): Promise<CallToolResult> => {
-        const params: { description: string; cwd?: string; timeout?: number } = { description };
+        const params: { description: string; cwd?: string; timeout?: number } =
+          { description };
         if (cwd) params.cwd = cwd;
         if (timeout) params.timeout = timeout;
         return await this.fixBugWithCodex(params);
-      }
+      },
     );
   }
 
@@ -962,82 +1052,101 @@ The more detailed, the better the fix!`),
   private setupResources(): void {
     // 终端列表资源
     this.server.resource(
-      'terminal-list',
-      'terminal://list',
-      { description: 'List of all terminal sessions', mimeType: 'application/json' },
+      "terminal-list",
+      "terminal://list",
+      {
+        description: "List of all terminal sessions",
+        mimeType: "application/json",
+      },
       async (): Promise<ReadResourceResult> => {
         try {
           const result = await this.terminalManager.listTerminals();
           return {
             contents: [
               {
-                uri: 'terminal://list',
-                mimeType: 'application/json',
-                text: JSON.stringify(result, null, 2)
-              }
-            ]
+                uri: "terminal://list",
+                mimeType: "application/json",
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
           };
         } catch (error) {
-          throw new Error(`Failed to get terminal list: ${error instanceof Error ? error.message : String(error)}`);
+          throw new Error(
+            `Failed to get terminal list: ${error instanceof Error ? error.message : String(error)}`,
+          );
         }
-      }
+      },
     );
 
     // 终端输出资源模板
     this.server.resource(
-      'terminal-output',
-      new ResourceTemplate('terminal://output/{terminalId}', {
-        list: undefined // 不需要列出所有可能的终端输出
+      "terminal-output",
+      new ResourceTemplate("terminal://output/{terminalId}", {
+        list: undefined, // 不需要列出所有可能的终端输出
       }),
-      { description: 'Terminal output for a specific terminal', mimeType: 'text/plain' },
+      {
+        description: "Terminal output for a specific terminal",
+        mimeType: "text/plain",
+      },
       async (uri: URL, variables): Promise<ReadResourceResult> => {
         try {
           const terminalId = variables.terminalId;
           if (!terminalId) {
-            throw new Error('Terminal ID is required');
+            throw new Error("Terminal ID is required");
           }
 
-          const actualTerminalId = Array.isArray(terminalId) ? terminalId[0] : terminalId;
+          const actualTerminalId = Array.isArray(terminalId)
+            ? terminalId[0]
+            : terminalId;
           if (!actualTerminalId) {
-            throw new Error('Terminal ID is required');
+            throw new Error("Terminal ID is required");
           }
-          const result = await this.terminalManager.readFromTerminal({ terminalId: actualTerminalId });
+          const result = await this.terminalManager.readFromTerminal({
+            terminalId: actualTerminalId,
+          });
           return {
             contents: [
               {
                 uri: uri.toString(),
-                mimeType: 'text/plain',
-                text: result.output
-              }
-            ]
+                mimeType: "text/plain",
+                text: result.output,
+              },
+            ],
           };
         } catch (error) {
-          throw new Error(`Failed to read terminal output: ${error instanceof Error ? error.message : String(error)}`);
+          throw new Error(
+            `Failed to read terminal output: ${error instanceof Error ? error.message : String(error)}`,
+          );
         }
-      }
+      },
     );
 
     // 管理器统计资源
     this.server.resource(
-      'terminal-stats',
-      'terminal://stats',
-      { description: 'Terminal manager statistics', mimeType: 'application/json' },
+      "terminal-stats",
+      "terminal://stats",
+      {
+        description: "Terminal manager statistics",
+        mimeType: "application/json",
+      },
       async (): Promise<ReadResourceResult> => {
         try {
           const stats = this.terminalManager.getStats();
           return {
             contents: [
               {
-                uri: 'terminal://stats',
-                mimeType: 'application/json',
-                text: JSON.stringify(stats, null, 2)
-              }
-            ]
+                uri: "terminal://stats",
+                mimeType: "application/json",
+                text: JSON.stringify(stats, null, 2),
+              },
+            ],
           };
         } catch (error) {
-          throw new Error(`Failed to get terminal stats: ${error instanceof Error ? error.message : String(error)}`);
+          throw new Error(
+            `Failed to get terminal stats: ${error instanceof Error ? error.message : String(error)}`,
+          );
         }
-      }
+      },
     );
   }
 
@@ -1047,16 +1156,16 @@ The more detailed, the better the fix!`),
   private setupPrompts(): void {
     // 使用指南提示
     this.server.prompt(
-      'terminal-usage-guide',
-      'Guide for using the persistent terminal system',
+      "terminal-usage-guide",
+      "Guide for using the persistent terminal system",
       {},
       async (): Promise<GetPromptResult> => {
         return {
           messages: [
             {
-              role: 'user',
+              role: "user",
               content: {
-                type: 'text',
+                type: "text",
                 text: `# Persistent Terminal System Usage Guide
 
 This MCP server provides persistent terminal session management. Here's how to use it:
@@ -1101,28 +1210,30 @@ Terminates a terminal session.
 - Supports interactive commands and long-running processes
 - Multiple concurrent sessions supported
 
-Would you like me to help you create and manage terminal sessions?`
-              }
-            }
-          ]
+Would you like me to help you create and manage terminal sessions?`,
+              },
+            },
+          ],
         };
-      }
+      },
     );
 
     // 故障排除提示
     this.server.prompt(
-      'terminal-troubleshooting',
-      'Troubleshooting guide for terminal issues',
+      "terminal-troubleshooting",
+      "Troubleshooting guide for terminal issues",
       {
-        issue: z.string().describe('Description of the issue you are experiencing')
+        issue: z
+          .string()
+          .describe("Description of the issue you are experiencing"),
       },
       async ({ issue }): Promise<GetPromptResult> => {
         return {
           messages: [
             {
-              role: 'user',
+              role: "user",
               content: {
-                type: 'text',
+                type: "text",
                 text: `# Terminal Troubleshooting Guide
 
 Issue reported: "${issue}"
@@ -1162,12 +1273,12 @@ Issue reported: "${issue}"
 3. Send simple commands (like 'echo test') to verify connectivity
 4. Check terminal manager stats for resource usage
 
-Would you like specific help with your issue?`
-              }
-            }
-          ]
+Would you like specific help with your issue?`,
+              },
+            },
+          ],
         };
-      }
+      },
     );
   }
 
@@ -1177,29 +1288,37 @@ Would you like specific help with your issue?`
   private setupEventHandlers(): void {
     // 监听终端事件并记录日志（仅在调试模式下）
     // 使用 stderr 避免污染 stdio JSON-RPC 通道
-    const debug = process.env.MCP_DEBUG === 'true';
+    const debug = process.env.MCP_DEBUG === "true";
 
-    this.terminalManager.on('terminalCreated', (terminalId, session) => {
+    this.terminalManager.on("terminalCreated", (terminalId, session) => {
       if (debug) {
-        process.stderr.write(`[MCP-DEBUG] Terminal created: ${terminalId} (PID: ${session.pid})\n`);
+        process.stderr.write(
+          `[MCP-DEBUG] Terminal created: ${terminalId} (PID: ${session.pid})\n`,
+        );
       }
     });
 
-    this.terminalManager.on('terminalExit', (terminalId, exitCode, signal) => {
+    this.terminalManager.on("terminalExit", (terminalId, exitCode, signal) => {
       if (debug) {
-        process.stderr.write(`[MCP-DEBUG] Terminal exited: ${terminalId} (code: ${exitCode}, signal: ${signal})\n`);
+        process.stderr.write(
+          `[MCP-DEBUG] Terminal exited: ${terminalId} (code: ${exitCode}, signal: ${signal})\n`,
+        );
       }
     });
 
-    this.terminalManager.on('terminalKilled', (terminalId, signal) => {
+    this.terminalManager.on("terminalKilled", (terminalId, signal) => {
       if (debug) {
-        process.stderr.write(`[MCP-DEBUG] Terminal killed: ${terminalId} (signal: ${signal})\n`);
+        process.stderr.write(
+          `[MCP-DEBUG] Terminal killed: ${terminalId} (signal: ${signal})\n`,
+        );
       }
     });
 
-    this.terminalManager.on('terminalCleaned', (terminalId) => {
+    this.terminalManager.on("terminalCleaned", (terminalId) => {
       if (debug) {
-        process.stderr.write(`[MCP-DEBUG] Terminal cleaned up: ${terminalId}\n`);
+        process.stderr.write(
+          `[MCP-DEBUG] Terminal cleaned up: ${terminalId}\n`,
+        );
       }
     });
   }
@@ -1219,19 +1338,26 @@ Would you like specific help with your issue?`
   }
 
   /**
+   * 获取 Web UI 管理器实例
+   */
+  getWebUiManager(): WebUIManager {
+    return this.webUiManager;
+  }
+
+  /**
    * 关闭服务器
    */
   async shutdown(): Promise<void> {
-    if (process.env.MCP_DEBUG === 'true') {
-      process.stderr.write('[MCP-DEBUG] Shutting down MCP server...\n');
+    if (process.env.MCP_DEBUG === "true") {
+      process.stderr.write("[MCP-DEBUG] Shutting down MCP server...\n");
     }
 
     // 关闭 Web UI
     await this.webUiManager.stop();
 
     await this.terminalManager.shutdown();
-    if (process.env.MCP_DEBUG === 'true') {
-      process.stderr.write('[MCP-DEBUG] MCP server shutdown complete\n');
+    if (process.env.MCP_DEBUG === "true") {
+      process.stderr.write("[MCP-DEBUG] MCP server shutdown complete\n");
     }
   }
 }

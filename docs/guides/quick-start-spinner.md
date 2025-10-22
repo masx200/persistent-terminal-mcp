@@ -18,6 +18,7 @@
 ```
 
 这些动画帧会占据大量的输出缓冲区，导致：
+
 - 真实的日志信息被淹没
 - 缓冲区快速填满
 - AI 模型消耗大量无用的 token
@@ -34,7 +35,7 @@ Persistent Terminal 自动检测并压缩这些 spinner 动画，只保留最后
 默认情况下，spinner 压缩已启用，无需任何配置：
 
 ```typescript
-import { TerminalManager } from 'persistent-terminal-mcp';
+import { TerminalManager } from "persistent-terminal-mcp";
 
 const manager = new TerminalManager();
 const terminalId = await manager.createTerminal();
@@ -42,7 +43,7 @@ const terminalId = await manager.createTerminal();
 // 运行会产生 spinner 的命令
 await manager.writeToTerminal({
   terminalId,
-  input: 'npm install'
+  input: "npm install",
 });
 
 // 等待完成
@@ -59,8 +60,8 @@ console.log(result.output);
 
 ```typescript
 const manager = new TerminalManager({
-  compactAnimations: true,      // 启用压缩（默认）
-  animationThrottleMs: 100      // 节流时间 100ms（默认）
+  compactAnimations: true, // 启用压缩（默认）
+  animationThrottleMs: 100, // 节流时间 100ms（默认）
 });
 ```
 
@@ -81,7 +82,7 @@ ANIMATION_THROTTLE_MS = "100"
 ```typescript
 // 方式 1: 创建时禁用
 const manager = new TerminalManager({
-  compactAnimations: false
+  compactAnimations: false,
 });
 
 // 方式 2: 运行时禁用
@@ -199,7 +200,7 @@ outputBuffer.setCompactAnimations(true);
 ```typescript
 const manager = new TerminalManager({
   compactAnimations: true,
-  animationThrottleMs: 200  // 增加到 200ms
+  animationThrottleMs: 200, // 增加到 200ms
 });
 ```
 
@@ -210,7 +211,7 @@ const manager = new TerminalManager({
 ```typescript
 if (process.env.DEBUG) {
   manager = new TerminalManager({
-    compactAnimations: false
+    compactAnimations: false,
   });
 }
 ```
@@ -222,6 +223,7 @@ if (process.env.DEBUG) {
 **原因**: 某些日志包含 spinner 字符但不是动画
 
 **解决**:
+
 ```typescript
 // 临时禁用压缩
 outputBuffer.setCompactAnimations(false);
@@ -232,9 +234,10 @@ outputBuffer.setCompactAnimations(false);
 **原因**: 节流时间太短
 
 **解决**:
+
 ```typescript
 const manager = new TerminalManager({
-  animationThrottleMs: 200  // 增加节流时间
+  animationThrottleMs: 200, // 增加节流时间
 });
 ```
 
@@ -243,9 +246,10 @@ const manager = new TerminalManager({
 **原因**: 节流时间太长
 
 **解决**:
+
 ```typescript
 const manager = new TerminalManager({
-  animationThrottleMs: 50  // 减少节流时间
+  animationThrottleMs: 50, // 减少节流时间
 });
 ```
 
@@ -260,4 +264,3 @@ const manager = new TerminalManager({
 - [Spinner Compaction 完整指南](spinner-compaction.md)
 - [OutputBuffer API 文档](../reference/output-buffer.md)
 - [TerminalManager API 文档](../reference/terminal-manager.md)
-

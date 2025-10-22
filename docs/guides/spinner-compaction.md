@@ -51,12 +51,12 @@ SESSION_TIMEOUT = "86400000"
 在创建 `TerminalManager` 时配置：
 
 ```typescript
-import { TerminalManager } from 'persistent-terminal-mcp';
+import { TerminalManager } from "persistent-terminal-mcp";
 
 const manager = new TerminalManager({
   maxBufferSize: 10000,
-  compactAnimations: true,        // 启用动画压缩
-  animationThrottleMs: 100        // 节流时间 100ms
+  compactAnimations: true, // 启用动画压缩
+  animationThrottleMs: 100, // 节流时间 100ms
 });
 ```
 
@@ -95,6 +95,7 @@ const isEnabled = outputBuffer.getCompactAnimations();
 ### 示例流程
 
 **原始输出**（未压缩）:
+
 ```
 ⠋ Installing dependencies
 ⠙ Installing dependencies
@@ -108,12 +109,14 @@ const isEnabled = outputBuffer.getCompactAnimations();
 ```
 
 **压缩后输出**:
+
 ```
 ⠧ Installing dependencies
 ✓ Dependencies installed
 ```
 
 或者：
+
 ```
 [spinner ×8]
 ✓ Dependencies installed
@@ -124,11 +127,11 @@ const isEnabled = outputBuffer.getCompactAnimations();
 ### 示例 1: 运行 npm 命令
 
 ```typescript
-import { TerminalManager } from 'persistent-terminal-mcp';
+import { TerminalManager } from "persistent-terminal-mcp";
 
 const manager = new TerminalManager({
   compactAnimations: true,
-  animationThrottleMs: 100
+  animationThrottleMs: 100,
 });
 
 const terminalId = await manager.createTerminal();
@@ -136,7 +139,7 @@ const terminalId = await manager.createTerminal();
 // 运行 npm install
 await manager.writeToTerminal({
   terminalId,
-  input: 'npm install'
+  input: "npm install",
 });
 
 // 等待命令完成
@@ -191,19 +194,19 @@ tsx src/examples/test-spinner-compaction.ts
 ```typescript
 // 开发环境 - 保留完整输出
 const devManager = new TerminalManager({
-  compactAnimations: false
+  compactAnimations: false,
 });
 
 // 生产环境 - 启用压缩
 const prodManager = new TerminalManager({
   compactAnimations: true,
-  animationThrottleMs: 100
+  animationThrottleMs: 100,
 });
 
 // CI/CD 环境 - 更激进的压缩
 const ciManager = new TerminalManager({
   compactAnimations: true,
-  animationThrottleMs: 200
+  animationThrottleMs: 200,
 });
 ```
 
@@ -213,7 +216,7 @@ const ciManager = new TerminalManager({
 const stats = await manager.getTerminalStats(terminalId);
 
 if (stats.estimatedTokens > 8000) {
-  console.log('⚠️  输出较大，建议启用压缩');
+  console.log("⚠️  输出较大，建议启用压缩");
 }
 ```
 
@@ -233,6 +236,7 @@ outputBuffer.setCompactAnimations(true);
 **症状**: 某些包含特殊字符的日志被压缩了
 
 **解决方案**:
+
 ```typescript
 // 降低 spinner 检测阈值（需要修改源码）
 // 或者临时禁用压缩
@@ -244,11 +248,12 @@ outputBuffer.setCompactAnimations(false);
 **症状**: spinner 看起来卡顿
 
 **解决方案**:
+
 ```typescript
 // 减少节流时间
 const manager = new TerminalManager({
   compactAnimations: true,
-  animationThrottleMs: 50  // 从 100ms 减少到 50ms
+  animationThrottleMs: 50, // 从 100ms 减少到 50ms
 });
 ```
 
@@ -257,13 +262,14 @@ const manager = new TerminalManager({
 **症状**: 即使启用压缩，输出仍然占用大量空间
 
 **解决方案**:
+
 ```typescript
 // 结合使用 head-tail 模式
 const result = await manager.readFromTerminal({
   terminalId,
-  mode: 'head-tail',
+  mode: "head-tail",
   headLines: 50,
-  tailLines: 50
+  tailLines: 50,
 });
 ```
 
@@ -284,18 +290,18 @@ tsx src/examples/test-spinner-compaction.ts
 
 ## 相关配置
 
-| 配置项 | 类型 | 默认值 | 说明 |
-|--------|------|--------|------|
-| `compactAnimations` | boolean | `true` | 是否启用动画压缩 |
-| `animationThrottleMs` | number | `100` | 动画节流时间（毫秒） |
-| `maxBufferSize` | number | `10000` | 最大缓冲区大小 |
+| 配置项                | 类型    | 默认值  | 说明                 |
+| --------------------- | ------- | ------- | -------------------- |
+| `compactAnimations`   | boolean | `true`  | 是否启用动画压缩     |
+| `animationThrottleMs` | number  | `100`   | 动画节流时间（毫秒） |
+| `maxBufferSize`       | number  | `10000` | 最大缓冲区大小       |
 
 ## 环境变量
 
-| 变量名 | 默认值 | 说明 |
-|--------|--------|------|
-| `COMPACT_ANIMATIONS` | `true` | 启用/禁用动画压缩 |
-| `ANIMATION_THROTTLE_MS` | `100` | 动画节流时间 |
+| 变量名                  | 默认值 | 说明              |
+| ----------------------- | ------ | ----------------- |
+| `COMPACT_ANIMATIONS`    | `true` | 启用/禁用动画压缩 |
+| `ANIMATION_THROTTLE_MS` | `100`  | 动画节流时间      |
 
 ## 参考资料
 
@@ -303,4 +309,3 @@ tsx src/examples/test-spinner-compaction.ts
 - [TerminalManager 源码](../../src/terminal-manager.ts)
 - [测试用例](../../src/__tests__/spinner-detection.test.ts)
 - [演示脚本](../../src/examples/test-spinner-compaction.ts)
-

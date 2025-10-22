@@ -5,16 +5,19 @@
 ## 测试脚本
 
 ### 1. test-mcp-stdio.mjs
+
 **Stdio 通道纯净性测试**
 
 验证 MCP 服务器的 stdout 只包含 JSON-RPC 消息，没有日志污染。
 
 **运行：**
+
 ```bash
 node tests/integration/test-mcp-stdio.mjs
 ```
 
 **测试内容：**
+
 - ✅ 启动 MCP 服务器
 - ✅ 发送初始化请求
 - ✅ 发送 tools/list 请求
@@ -22,6 +25,7 @@ node tests/integration/test-mcp-stdio.mjs
 - ✅ 验证没有非 JSON 输出
 
 **预期结果：**
+
 ```
 ✅ 测试通过！stdout 通道纯净，只有 JSON-RPC 消息
 收到的 JSON-RPC 消息数量: 2
@@ -31,16 +35,19 @@ node tests/integration/test-mcp-stdio.mjs
 ---
 
 ### 2. test-cursor-scenario.mjs
+
 **Cursor 使用场景测试**
 
 模拟 Cursor 实际使用 MCP 服务器的完整场景。
 
 **运行：**
+
 ```bash
 node tests/integration/test-cursor-scenario.mjs
 ```
 
 **测试内容：**
+
 1. ✅ 初始化连接
 2. ✅ 列出可用工具
 3. ✅ 创建终端
@@ -50,6 +57,7 @@ node tests/integration/test-cursor-scenario.mjs
 7. ✅ 终止终端
 
 **预期结果：**
+
 ```
 ✅ 所有测试通过！MCP 服务器工作正常，stdout 通道纯净
 通过: 7
@@ -60,16 +68,19 @@ node tests/integration/test-cursor-scenario.mjs
 ---
 
 ### 3. test-terminal-fixes.mjs
+
 **终端修复验证测试**
 
 验证终端交互问题的修复是否有效。
 
 **运行：**
+
 ```bash
 node tests/integration/test-terminal-fixes.mjs
 ```
 
 **测试内容：**
+
 1. ✅ 基本命令执行
    - 验证命令能正确执行
    - 验证输出包含命令回显
@@ -92,6 +103,7 @@ node tests/integration/test-terminal-fixes.mjs
    - 验证支持 ANSI 转义序列
 
 **预期结果：**
+
 ```
 ✅ 所有测试通过！
 通过: 6
@@ -103,6 +115,7 @@ node tests/integration/test-terminal-fixes.mjs
 ## 运行所有测试
 
 ### 快速运行
+
 ```bash
 # 在项目根目录
 npm run build
@@ -112,6 +125,7 @@ node tests/integration/test-terminal-fixes.mjs
 ```
 
 ### 使用脚本
+
 创建一个运行所有测试的脚本：
 
 ```bash
@@ -153,17 +167,21 @@ echo "✅ 所有集成测试通过！"
 ## 测试环境要求
 
 ### 系统要求
+
 - Node.js 16+
 - macOS / Linux / Windows
 
 ### 依赖
+
 ```bash
 npm install
 npm run build
 ```
 
 ### 环境变量
+
 测试默认使用以下配置：
+
 - `MCP_DEBUG=false` - 关闭调试日志
 - 其他环境变量使用默认值
 
@@ -174,21 +192,25 @@ npm run build
 ### 测试失败？
 
 **1. 确保已编译**
+
 ```bash
 npm run build
 ```
 
 **2. 检查依赖**
+
 ```bash
 npm install
 ```
 
 **3. 查看详细日志**
+
 ```bash
 MCP_DEBUG=true node tests/integration/test-xxx.mjs
 ```
 
 **4. 单独运行失败的测试**
+
 ```bash
 node tests/integration/test-xxx.mjs
 ```
@@ -213,10 +235,10 @@ A: 确保已应用终端修复，检查 PTY 配置
 ```javascript
 #!/usr/bin/env node
 
-import { TerminalManager } from '../../dist/terminal-manager.js';
+import { TerminalManager } from "../../dist/terminal-manager.js";
 
-console.log('测试名称');
-console.log('='.repeat(80));
+console.log("测试名称");
+console.log("=".repeat(80));
 
 const manager = new TerminalManager();
 let testsPassed = 0;
@@ -225,21 +247,21 @@ let testsFailed = 0;
 async function testSomething() {
   try {
     // 测试逻辑
-    console.log('✅ 测试通过');
+    console.log("✅ 测试通过");
     testsPassed++;
   } catch (error) {
-    console.error('❌ 测试失败:', error.message);
+    console.error("❌ 测试失败:", error.message);
     testsFailed++;
   }
 }
 
 async function runTests() {
   await testSomething();
-  
-  console.log('\n测试结果:');
+
+  console.log("\n测试结果:");
   console.log(`通过: ${testsPassed}`);
   console.log(`失败: ${testsFailed}`);
-  
+
   process.exit(testsFailed > 0 ? 1 : 0);
 }
 
@@ -265,7 +287,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: "18"
       - run: npm install
       - run: npm run build
       - run: node tests/integration/test-mcp-stdio.mjs
@@ -284,4 +306,3 @@ jobs:
 ---
 
 **最后更新：** 2025-10-06
-

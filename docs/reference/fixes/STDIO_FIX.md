@@ -9,6 +9,7 @@
 ```
 
 这个错误会导致：
+
 - Cursor 无法正确解析 MCP 服务器的响应
 - 执行几个命令后 Cursor 会卡住
 - MCP 工具调用失败
@@ -45,11 +46,11 @@ MCP 协议使用 **stdio (标准输入/输出)** 进行 JSON-RPC 通信。这要
 
 ```typescript
 // 修复前
-console.log('Terminal created:', terminalId);
-console.error('Error:', error);
+console.log("Terminal created:", terminalId);
+console.error("Error:", error);
 
 // 修复后
-if (process.env.MCP_DEBUG === 'true') {
+if (process.env.MCP_DEBUG === "true") {
   process.stderr.write(`[MCP-DEBUG] Terminal created: ${terminalId}\n`);
 }
 process.stderr.write(`[MCP-ERROR] Error: ${error}\n`);
@@ -61,7 +62,7 @@ process.stderr.write(`[MCP-ERROR] Error: ${error}\n`);
 
 ```typescript
 function log(message: string) {
-  if (process.env.MCP_DEBUG === 'true') {
+  if (process.env.MCP_DEBUG === "true") {
     process.stderr.write(`[MCP-DEBUG] ${message}\n`);
   }
 }
@@ -70,16 +71,19 @@ function log(message: string) {
 ### 3. 修复的文件
 
 #### src/index.ts
+
 - ✅ 修改 `log()` 函数使用 `process.stderr.write()`
 - ✅ 修改错误处理中的日志输出
 - ✅ 修改未捕获异常的日志输出
 
 #### src/mcp-server.ts
+
 - ✅ 修改 `setupEventHandlers()` 中的所有日志输出
 - ✅ 修改 `shutdown()` 中的日志输出
 - ✅ 添加 `MCP_DEBUG` 环境变量检查
 
 #### src/terminal-manager.ts
+
 - ✅ 修改 `cleanupTimeoutSessions()` 中的日志输出
 - ✅ 修改 `shutdown()` 中的所有日志输出
 
@@ -94,6 +98,7 @@ node test-mcp-stdio.mjs
 ```
 
 **预期结果：**
+
 ```
 ✅ 测试通过！stdout 通道纯净，只有 JSON-RPC 消息
 收到的 JSON-RPC 消息数量: 2
@@ -109,6 +114,7 @@ node test-cursor-scenario.mjs
 ```
 
 **预期结果：**
+
 ```
 ✅ 所有测试通过！MCP 服务器工作正常，stdout 通道纯净
 通过: 7
@@ -117,6 +123,7 @@ node test-cursor-scenario.mjs
 ```
 
 测试覆盖的操作：
+
 1. ✅ 初始化连接
 2. ✅ 列出可用工具
 3. ✅ 创建终端
@@ -189,20 +196,24 @@ SESSION_TIMEOUT = "86400000"
 ### 修复后的改进
 
 ✅ **兼容性**
+
 - 完全兼容 Cursor 和其他严格的 MCP 客户端
 - 符合 MCP 协议规范
 
 ✅ **稳定性**
+
 - 不会因为日志输出导致 JSON 解析错误
 - 不会卡住客户端
 
 ✅ **可调试性**
+
 - 保留了调试日志功能
 - 通过环境变量灵活控制
 
 ### 向后兼容性
 
 ✅ **完全向后兼容**
+
 - API 没有任何变化
 - 功能完全相同
 - 只是修复了日志输出方式
@@ -223,4 +234,3 @@ SESSION_TIMEOUT = "86400000"
 - `src/terminal-manager.ts` - 终端管理器
 - `test-mcp-stdio.mjs` - Stdio 纯净性测试
 - `test-cursor-scenario.mjs` - Cursor 场景测试
-

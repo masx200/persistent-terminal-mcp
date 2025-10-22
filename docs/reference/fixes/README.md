@@ -5,9 +5,11 @@
 ## 文档列表
 
 ### 1. [FIX_SUMMARY.md](FIX_SUMMARY.md)
+
 **完整修复总结**
 
 包含所有修复的概述：
+
 - Cursor 兼容性修复
 - 终端交互问题修复
 - 新增功能说明
@@ -19,9 +21,11 @@
 ---
 
 ### 2. [STDIO_FIX.md](STDIO_FIX.md)
+
 **Stdio 通道纯净性修复**
 
 详细说明 Cursor 兼容性问题的修复：
+
 - 问题描述和根本原因
 - MCP 协议要求
 - 修复方案和代码示例
@@ -33,9 +37,11 @@
 ---
 
 ### 3. [CURSOR_FIX_SUMMARY.md](CURSOR_FIX_SUMMARY.md)
+
 **Cursor 兼容性问题修复总结（中文）**
 
 中文版的 Cursor 修复说明：
+
 - 问题现象
 - 根本原因
 - 修复方案
@@ -47,9 +53,11 @@
 ---
 
 ### 4. [QUICK_FIX_GUIDE.md](QUICK_FIX_GUIDE.md)
+
 **快速修复指南**
 
 3 步快速修复指南：
+
 1. 重新编译项目
 2. 更新 Cursor 配置
 3. 重启 Cursor
@@ -59,9 +67,11 @@
 ---
 
 ### 5. [TERMINAL_FIXES.md](TERMINAL_FIXES.md)
+
 **终端交互问题修复报告**
 
 详细的终端修复技术文档：
+
 - 问题 1: 命令执行修复
 - 问题 2: 交互式输入处理修复
 - 问题 3: 输出读取实时性修复
@@ -96,15 +106,18 @@
 ### 按角色
 
 **用户（遇到问题）**
+
 1. [QUICK_FIX_GUIDE.md](QUICK_FIX_GUIDE.md) - 快速解决
 2. [CURSOR_FIX_SUMMARY.md](CURSOR_FIX_SUMMARY.md) - 了解详情
 
 **开发者（需要技术细节）**
+
 1. [FIX_SUMMARY.md](FIX_SUMMARY.md) - 全局了解
 2. [STDIO_FIX.md](STDIO_FIX.md) - Stdio 协议
 3. [TERMINAL_FIXES.md](TERMINAL_FIXES.md) - 终端实现
 
 **维护者（需要完整信息）**
+
 - 阅读所有文档
 - 参考 [../../CHANGELOG.md](../../CHANGELOG.md)
 
@@ -113,12 +126,15 @@
 ## 相关资源
 
 ### 测试脚本
+
 位于 `tests/integration/`：
+
 - `test-mcp-stdio.mjs` - Stdio 纯净性测试
 - `test-cursor-scenario.mjs` - Cursor 场景测试
 - `test-terminal-fixes.mjs` - 终端修复测试
 
 ### 其他文档
+
 - [../../CHANGELOG.md](../../CHANGELOG.md) - 完整更新日志
 - [../../README.md](../../README.md) - 项目说明
 - [../bug-fixes.md](../bug-fixes.md) - 历史 Bug 修复记录
@@ -159,6 +175,7 @@
 ## 贡献
 
 如果你发现新的问题或有改进建议，请：
+
 1. 查看 [../../CONTRIBUTING.md](../../CONTRIBUTING.md)
 2. 提交 Issue 或 Pull Request
 3. 参考现有修复文档的格式
@@ -166,4 +183,3 @@
 ---
 
 **最后更新：** 2025-10-06
-

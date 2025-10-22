@@ -7,10 +7,7 @@
     "mcpServers": {
       "persistent-terminal": {
         "command": "npx",
-        "args": [
-          "-y",
-          "persistent-terminal-mcp"
-        ],
+        "args": ["-y", "persistent-terminal-mcp"],
         "env": {
           "MAX_BUFFER_SIZE": "10000",
           "SESSION_TIMEOUT": "86400000",
@@ -24,12 +21,7 @@
     "mcpServers": {
       "persistent-terminal": {
         "command": "cmd",
-        "args": [
-          "/c",
-          "npx",
-          "-y",
-          "persistent-terminal-mcp"
-        ],
+        "args": ["/c", "npx", "-y", "persistent-terminal-mcp"],
         "env": {
           "MAX_BUFFER_SIZE": "10000",
           "SESSION_TIMEOUT": "86400000",

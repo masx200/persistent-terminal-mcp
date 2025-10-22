@@ -27,12 +27,7 @@
   "mcpServers": {
     "persistent-terminal": {
       "command": "cmd",
-      "args": [
-        "/c",
-        "npx",
-        "-y",
-        "persistent-terminal-mcp"
-      ],
+      "args": ["/c", "npx", "-y", "persistent-terminal-mcp"],
       "env": {
         "MAX_BUFFER_SIZE": "10000",
         "SESSION_TIMEOUT": "86400000",
@@ -176,16 +171,16 @@ claude mcp add persistent-terminal --env MAX_BUFFER_SIZE=10000 -- cmd /c npx -y 
 error: unknown option '-y'
 ```
 
-原因是 `-y` 被 Claude CLI 解析，而非传递给 `npx`。请改用上述两种方法。 
+原因是 `-y` 被 Claude CLI 解析，而非传递给 `npx`。请改用上述两种方法。
 
 ### Q2：项目级与全局配置差别？
 
-| 特性        | 项目级配置 `.mcp.json` | 全局配置 `~/.claude.json` |
-|-------------|-------------------------|----------------------------|
-| 作用范围    | 仅当前项目               | 指定项目（脚本写入）       |
-| 可提交 Git | ✅ 是                    | ❌ 否                      |
-| 配置复杂度  | 低（单文件）             | 中（需脚本）               |
-| 团队共享    | ✅ 支持                  | ❌ 不便                    |
+| 特性       | 项目级配置 `.mcp.json` | 全局配置 `~/.claude.json` |
+| ---------- | ---------------------- | ------------------------- |
+| 作用范围   | 仅当前项目             | 指定项目（脚本写入）      |
+| 可提交 Git | ✅ 是                  | ❌ 否                     |
+| 配置复杂度 | 低（单文件）           | 中（需脚本）              |
+| 团队共享   | ✅ 支持                | ❌ 不便                   |
 
 ### Q3：如何移除全局配置？
 
@@ -239,4 +234,3 @@ print('✓ 已删除 persistent-terminal MCP 配置')
 **文档版本**：1.0  
 **最后更新**：2025-10-20  
 **适用系统**：Windows 10 / Windows 11
-

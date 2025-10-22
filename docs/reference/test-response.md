@@ -13,6 +13,7 @@
 #### 问题 1: 命令执行问题 ✅ 已修复
 
 **你们的反馈：**
+
 > 发送到终端的命令不会自动执行，无论发送什么内容，命令都只是显示在终端中，但不会被执行。
 
 **根本原因：**
@@ -24,6 +25,7 @@
 **使用方式：**
 
 **之前（需要手动添加 \n）：**
+
 ```json
 {
   "name": "write_terminal",
@@ -35,6 +37,7 @@
 ```
 
 **现在（自动添加，更自然）：**
+
 ```json
 {
   "name": "write_terminal",
@@ -52,12 +55,14 @@
 #### 问题 2: 终端状态不一致 ✅ 已修复
 
 **你们的反馈：**
+
 > kill_terminal 命令执行后，终端状态显示为 "terminated"，但在 list_terminals 中该终端仍然显示。
 
 **修复方案：**
 现在 `kill_terminal` 会完全清理终端资源，从所有内部 Map 中删除，不会再出现在列表中。
 
 **修复后的行为：**
+
 ```
 1. 创建 2 个终端
    list_terminals → 返回 2 个终端
@@ -87,6 +92,7 @@
 ### 请重新测试
 
 **步骤 1: 更新代码**
+
 ```bash
 cd /Users/admin/Desktop/node-pty
 git pull  # 或获取最新代码
@@ -94,6 +100,7 @@ npm run build
 ```
 
 **步骤 2: 重启 Claude Code**
+
 ```bash
 # 退出 Claude Code
 # 重新启动
@@ -103,6 +110,7 @@ claude
 **步骤 3: 验证修复**
 
 测试命令自动执行：
+
 ```
 请创建一个终端，然后执行以下命令（不要手动添加换行符）：
 1. pwd
@@ -111,6 +119,7 @@ claude
 ```
 
 测试终端清理：
+
 ```
 请创建 2 个终端，然后 kill 第一个，再列出所有终端，应该只看到 1 个。
 ```
@@ -124,6 +133,7 @@ claude
 #### 问题: 找不到 create_terminal 工具 ❌ 配置问题
 
 **你们的反馈：**
+
 > 所有操作都返回 "Terminal 1 not found"，套件中没有任何"创建终端"入口。
 
 **分析：**
@@ -132,11 +142,13 @@ claude
 **验证工具是否注册：**
 
 在 Codex CLI 中运行：
+
 ```
 列出所有可用的 MCP 工具
 ```
 
 应该看到 6 个工具：
+
 1. `persistent-terminal__create_terminal`
 2. `persistent-terminal__write_terminal`
 3. `persistent-terminal__read_terminal`
@@ -151,6 +163,7 @@ claude
 #### 1. 检查配置文件
 
 Codex CLI 的配置文件可能在：
+
 - `~/.codex/config.json`
 - `~/.config/codex/config.json`
 - 项目目录下的 `.codex/config.json`
@@ -158,6 +171,7 @@ Codex CLI 的配置文件可能在：
 #### 2. 配置格式
 
 应该类似这样：
+
 ```json
 {
   "mcpServers": {
@@ -176,6 +190,7 @@ Codex CLI 的配置文件可能在：
 #### 3. 验证 MCP 服务器
 
 手动测试 MCP 服务器是否正常：
+
 ```bash
 node /Users/admin/Desktop/node-pty/dist/index.js
 ```
@@ -185,6 +200,7 @@ node /Users/admin/Desktop/node-pty/dist/index.js
 #### 4. 重启 Codex CLI
 
 配置修改后，需要重启 Codex CLI：
+
 ```bash
 # 退出 Codex CLI
 # 重新启动
@@ -201,30 +217,36 @@ codex
 
 ```javascript
 // 步骤 1: 创建终端（获取 terminalId）
-const result = await persistent-terminal__create_terminal({
-  cwd: "/Users/admin/Desktop/ceshi"
-});
+const result =
+  (await persistent) -
+  terminal__create_terminal({
+    cwd: "/Users/admin/Desktop/ceshi",
+  });
 // 返回: { terminalId: "abc-123-def-456", ... }
 
 // 步骤 2: 使用返回的 terminalId 进行操作
-await persistent-terminal__write_terminal({
-  terminalId: "abc-123-def-456",  // 使用实际返回的 ID
-  input: "pwd"
-});
+(await persistent) -
+  terminal__write_terminal({
+    terminalId: "abc-123-def-456", // 使用实际返回的 ID
+    input: "pwd",
+  });
 
 // 步骤 3: 读取输出
-await persistent-terminal__read_terminal({
-  terminalId: "abc-123-def-456"
-});
+(await persistent) -
+  terminal__read_terminal({
+    terminalId: "abc-123-def-456",
+  });
 ```
 
 **错误的使用方式：**
+
 ```javascript
 // ❌ 错误：使用硬编码的 ID "1"
-await persistent-terminal__write_terminal({
-  terminalId: "1",  // 这个终端不存在！
-  input: "pwd"
-});
+(await persistent) -
+  terminal__write_terminal({
+    terminalId: "1", // 这个终端不存在！
+    input: "pwd",
+  });
 ```
 
 ---
@@ -233,47 +255,55 @@ await persistent-terminal__write_terminal({
 
 ```javascript
 // 1. 列出当前终端（应该是空的）
-const list1 = await persistent-terminal__list_terminals();
+const list1 = (await persistent) - terminal__list_terminals();
 console.log("初始终端列表:", list1);
 
 // 2. 创建第一个终端
-const terminal1 = await persistent-terminal__create_terminal({
-  cwd: "/Users/admin/Desktop/ceshi"
-});
+const terminal1 =
+  (await persistent) -
+  terminal__create_terminal({
+    cwd: "/Users/admin/Desktop/ceshi",
+  });
 console.log("创建的终端 ID:", terminal1.terminalId);
 
 // 3. 发送命令
-await persistent-terminal__write_terminal({
-  terminalId: terminal1.terminalId,
-  input: "pwd"
-});
+(await persistent) -
+  terminal__write_terminal({
+    terminalId: terminal1.terminalId,
+    input: "pwd",
+  });
 
 // 4. 等待 1 秒
 await sleep(1000);
 
 // 5. 读取输出
-const output = await persistent-terminal__read_terminal({
-  terminalId: terminal1.terminalId
-});
+const output =
+  (await persistent) -
+  terminal__read_terminal({
+    terminalId: terminal1.terminalId,
+  });
 console.log("输出:", output);
 
 // 6. 获取统计信息
-const stats = await persistent-terminal__get_terminal_stats({
-  terminalId: terminal1.terminalId
-});
+const stats =
+  (await persistent) -
+  terminal__get_terminal_stats({
+    terminalId: terminal1.terminalId,
+  });
 console.log("统计:", stats);
 
 // 7. 列出所有终端
-const list2 = await persistent-terminal__list_terminals();
+const list2 = (await persistent) - terminal__list_terminals();
 console.log("当前终端列表:", list2);
 
 // 8. 终止终端
-await persistent-terminal__kill_terminal({
-  terminalId: terminal1.terminalId
-});
+(await persistent) -
+  terminal__kill_terminal({
+    terminalId: terminal1.terminalId,
+  });
 
 // 9. 再次列出（应该是空的）
-const list3 = await persistent-terminal__list_terminals();
+const list3 = (await persistent) - terminal__list_terminals();
 console.log("终止后的终端列表:", list3);
 ```
 
@@ -297,9 +327,8 @@ console.log("终止后的终端列表:", list3);
 
 ```typescript
 // 自动添加换行符
-const inputToWrite = input.endsWith('\n') || input.endsWith('\r') 
-  ? input 
-  : input + '\n';
+const inputToWrite =
+  input.endsWith("\n") || input.endsWith("\r") ? input : input + "\n";
 ptyProcess.write(inputToWrite);
 ```
 
@@ -331,15 +360,15 @@ this.sessions.delete(terminalId);
 
 ### 修复状态
 
-| 问题 | 状态 | 说明 |
-|------|------|------|
-| 命令不会自动执行 | ✅ 已修复 | 自动添加换行符 |
-| kill 后终端仍在列表 | ✅ 已修复 | 完全清理资源 |
+| 问题                 | 状态        | 说明              |
+| -------------------- | ----------- | ----------------- |
+| 命令不会自动执行     | ✅ 已修复   | 自动添加换行符    |
+| kill 后终端仍在列表  | ✅ 已修复   | 完全清理资源      |
 | Codex CLI 找不到工具 | ⚠️ 配置问题 | 需要检查 MCP 配置 |
 
 ### 下一步
 
-1. **Claude Code 用户：** 
+1. **Claude Code 用户：**
    - 更新代码
    - 重启 Claude Code
    - 重新测试

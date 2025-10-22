@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
-import { WebSocketServer, WebSocket } from 'ws';
-import { createServer, Server as HttpServer } from 'http';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { TerminalManager } from './terminal-manager.js';
+import express, { Request, Response } from "express";
+import { WebSocketServer, WebSocket } from "ws";
+import { createServer, Server as HttpServer } from "http";
+import path from "path";
+import { fileURLToPath } from "url";
+import { TerminalManager } from "./terminal-manager.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,12 +35,12 @@ export class WebUIServer {
     this.app.use(express.urlencoded({ extended: true }));
 
     // 静态文件服务
-    const publicPath = path.join(__dirname, '../public');
+    const publicPath = path.join(__dirname, "../public");
     this.app.use(express.static(publicPath));
 
     // 请求日志
     this.app.use((req, res, next) => {
-      if (process.env.MCP_DEBUG === 'true') {
+      if (process.env.MCP_DEBUG === "true") {
         process.stderr.write(`[WEB-UI] ${req.method} ${req.path}\n`);
       }
       next();
@@ -52,13 +52,13 @@ export class WebUIServer {
    */
   private setupRoutes(): void {
     // 主页
-    this.app.get('/', (req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, '../public/index.html'));
+    this.app.get("/", (req: Request, res: Response) => {
+      res.sendFile(path.join(__dirname, "../public/index.html"));
     });
 
     // 终端详情页
-    this.app.get('/terminal/:id', (req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, '../public/terminal.html'));
+    this.app.get("/terminal/:id", (req: Request, res: Response) => {
+      res.sendFile(path.join(__dirname, "../public/terminal.html"));
     });
 
     // REST API 端点
@@ -70,30 +70,30 @@ export class WebUIServer {
    */
   private setupApiRoutes(): void {
     // 获取所有终端
-    this.app.get('/api/terminals', async (req: Request, res: Response) => {
+    this.app.get("/api/terminals", async (req: Request, res: Response) => {
       try {
         const result = await this.terminalManager.listTerminals();
         res.json(result);
       } catch (error) {
         res.status(500).json({
-          error: 'Failed to list terminals',
-          message: error instanceof Error ? error.message : String(error)
+          error: "Failed to list terminals",
+          message: error instanceof Error ? error.message : String(error),
         });
       }
     });
 
     // 获取终端详情
-    this.app.get('/api/terminals/:id', async (req: Request, res: Response) => {
+    this.app.get("/api/terminals/:id", async (req: Request, res: Response) => {
       try {
         const { id } = req.params;
         if (!id) {
-          res.status(400).json({ error: 'Terminal ID is required' });
+          res.status(400).json({ error: "Terminal ID is required" });
           return;
         }
         const session = this.terminalManager.getTerminalInfo(id);
-        
+
         if (!session) {
-          res.status(404).json({ error: 'Terminal not found' });
+          res.status(404).json({ error: "Terminal not found" });
           return;
         }
 
@@ -104,144 +104,156 @@ export class WebUIServer {
           cwd: session.cwd,
           created: session.created.toISOString(),
           lastActivity: session.lastActivity.toISOString(),
-          status: session.status
+          status: session.status,
         });
       } catch (error) {
         res.status(500).json({
-          error: 'Failed to get terminal info',
-          message: error instanceof Error ? error.message : String(error)
+          error: "Failed to get terminal info",
+          message: error instanceof Error ? error.message : String(error),
         });
       }
     });
 
     // 创建终端
-    this.app.post('/api/terminals', async (req: Request, res: Response) => {
+    this.app.post("/api/terminals", async (req: Request, res: Response) => {
       try {
         const { shell, cwd, env } = req.body;
         const terminalId = await this.terminalManager.createTerminal({
           shell,
           cwd,
-          env
+          env,
         });
 
         const session = this.terminalManager.getTerminalInfo(terminalId);
-        
+
         res.status(201).json({
           terminalId,
           status: session?.status,
           pid: session?.pid,
           shell: session?.shell,
-          cwd: session?.cwd
+          cwd: session?.cwd,
         });
 
         // 广播新终端创建事件
         this.broadcast({
-          type: 'terminal_created',
-          terminalId
+          type: "terminal_created",
+          terminalId,
         });
       } catch (error) {
         res.status(400).json({
-          error: 'Failed to create terminal',
-          message: error instanceof Error ? error.message : String(error)
+          error: "Failed to create terminal",
+          message: error instanceof Error ? error.message : String(error),
         });
       }
     });
 
     // 读取终端输出
-    this.app.get('/api/terminals/:id/output', async (req: Request, res: Response) => {
-      try {
-        const { id } = req.params;
-        if (!id) {
-          res.status(400).json({ error: 'Terminal ID is required' });
-          return;
+    this.app.get(
+      "/api/terminals/:id/output",
+      async (req: Request, res: Response) => {
+        try {
+          const { id } = req.params;
+          if (!id) {
+            res.status(400).json({ error: "Terminal ID is required" });
+            return;
+          }
+          const { since, maxLines, mode } = req.query;
+
+          const result = await this.terminalManager.readFromTerminal({
+            terminalId: id,
+            since: since ? parseInt(since as string) : undefined,
+            maxLines: maxLines ? parseInt(maxLines as string) : undefined,
+            mode: mode as any,
+          });
+
+          res.json(result);
+        } catch (error) {
+          res.status(400).json({
+            error: "Failed to read terminal output",
+            message: error instanceof Error ? error.message : String(error),
+          });
         }
-        const { since, maxLines, mode } = req.query;
-
-        const result = await this.terminalManager.readFromTerminal({
-          terminalId: id,
-          since: since ? parseInt(since as string) : undefined,
-          maxLines: maxLines ? parseInt(maxLines as string) : undefined,
-          mode: mode as any
-        });
-
-        res.json(result);
-      } catch (error) {
-        res.status(400).json({
-          error: 'Failed to read terminal output',
-          message: error instanceof Error ? error.message : String(error)
-        });
-      }
-    });
+      },
+    );
 
     // 写入终端输入
-    this.app.post('/api/terminals/:id/input', async (req: Request, res: Response) => {
-      try {
-        const { id } = req.params;
-        if (!id) {
-          res.status(400).json({ error: 'Terminal ID is required' });
-          return;
+    this.app.post(
+      "/api/terminals/:id/input",
+      async (req: Request, res: Response) => {
+        try {
+          const { id } = req.params;
+          if (!id) {
+            res.status(400).json({ error: "Terminal ID is required" });
+            return;
+          }
+          const { input, appendNewline } = req.body;
+
+          await this.terminalManager.writeToTerminal({
+            terminalId: id,
+            input,
+            appendNewline,
+          });
+
+          res.json({ success: true });
+        } catch (error) {
+          res.status(400).json({
+            error: "Failed to write to terminal",
+            message: error instanceof Error ? error.message : String(error),
+          });
         }
-        const { input, appendNewline } = req.body;
-
-        await this.terminalManager.writeToTerminal({
-          terminalId: id,
-          input,
-          appendNewline
-        });
-
-        res.json({ success: true });
-      } catch (error) {
-        res.status(400).json({
-          error: 'Failed to write to terminal',
-          message: error instanceof Error ? error.message : String(error)
-        });
-      }
-    });
+      },
+    );
 
     // 终止终端
-    this.app.delete('/api/terminals/:id', async (req: Request, res: Response) => {
-      try {
-        const { id } = req.params;
-        if (!id) {
-          res.status(400).json({ error: 'Terminal ID is required' });
-          return;
+    this.app.delete(
+      "/api/terminals/:id",
+      async (req: Request, res: Response) => {
+        try {
+          const { id } = req.params;
+          if (!id) {
+            res.status(400).json({ error: "Terminal ID is required" });
+            return;
+          }
+          const { signal } = req.query;
+
+          await this.terminalManager.killTerminal(id, signal as string);
+
+          res.json({ success: true });
+
+          // 广播终端终止事件
+          this.broadcast({
+            type: "terminal_killed",
+            terminalId: id,
+          });
+        } catch (error) {
+          res.status(400).json({
+            error: "Failed to kill terminal",
+            message: error instanceof Error ? error.message : String(error),
+          });
         }
-        const { signal } = req.query;
-
-        await this.terminalManager.killTerminal(id, signal as string);
-
-        res.json({ success: true });
-
-        // 广播终端终止事件
-        this.broadcast({
-          type: 'terminal_killed',
-          terminalId: id
-        });
-      } catch (error) {
-        res.status(400).json({
-          error: 'Failed to kill terminal',
-          message: error instanceof Error ? error.message : String(error)
-        });
-      }
-    });
+      },
+    );
 
     // 获取终端统计
-    this.app.get('/api/terminals/:id/stats', async (req: Request, res: Response) => {
-      try {
-        const { id } = req.params;
-        if (!id) {
-          res.status(400).json({ error: 'Terminal ID is required' });
-          return;
+    this.app.get(
+      "/api/terminals/:id/stats",
+      async (req: Request, res: Response) => {
+        try {
+          const { id } = req.params;
+          if (!id) {
+            res.status(400).json({ error: "Terminal ID is required" });
+            return;
+          }
+          const result = await this.terminalManager.getTerminalStats(id);
+          res.json(result);
+        } catch (error) {
+          res.status(400).json({
+            error: "Failed to get terminal stats",
+            message: error instanceof Error ? error.message : String(error),
+          });
         }
-        const result = await this.terminalManager.getTerminalStats(id);
-        res.json(result);
-      } catch (error) {
-        res.status(400).json({
-          error: 'Failed to get terminal stats',
-          message: error instanceof Error ? error.message : String(error)
-        });
-      }
-    });
+      },
+    );
   }
 
   /**
@@ -252,40 +264,43 @@ export class WebUIServer {
 
     this.wss = new WebSocketServer({ server: this.httpServer });
 
-    this.wss.on('connection', (ws: WebSocket) => {
+    this.wss.on("connection", (ws: WebSocket) => {
       this.clients.add(ws);
 
-      if (process.env.MCP_DEBUG === 'true') {
-        process.stderr.write('[WEB-UI] WebSocket client connected\n');
+      if (process.env.MCP_DEBUG === "true") {
+        process.stderr.write("[WEB-UI] WebSocket client connected\n");
       }
 
-      ws.on('close', () => {
+      ws.on("close", () => {
         this.clients.delete(ws);
-        if (process.env.MCP_DEBUG === 'true') {
-          process.stderr.write('[WEB-UI] WebSocket client disconnected\n');
+        if (process.env.MCP_DEBUG === "true") {
+          process.stderr.write("[WEB-UI] WebSocket client disconnected\n");
         }
       });
 
-      ws.on('error', (error) => {
-        if (process.env.MCP_DEBUG === 'true') {
+      ws.on("error", (error) => {
+        if (process.env.MCP_DEBUG === "true") {
           process.stderr.write(`[WEB-UI] WebSocket error: ${error}\n`);
         }
       });
     });
 
     // 监听终端事件并广播
-    this.terminalManager.on('terminalOutput', (terminalId: string, data: string) => {
-      this.broadcast({
-        type: 'output',
-        terminalId,
-        data
-      });
-    });
+    this.terminalManager.on(
+      "terminalOutput",
+      (terminalId: string, data: string) => {
+        this.broadcast({
+          type: "output",
+          terminalId,
+          data,
+        });
+      },
+    );
 
-    this.terminalManager.on('terminalExit', (terminalId: string) => {
+    this.terminalManager.on("terminalExit", (terminalId: string) => {
       this.broadcast({
-        type: 'exit',
-        terminalId
+        type: "exit",
+        terminalId,
       });
     });
   }
@@ -305,22 +320,27 @@ export class WebUIServer {
   /**
    * 启动服务器
    */
-  async start(port: number): Promise<void> {
+  async start(port: number, host?: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.httpServer = createServer(this.app);
-      
-      this.httpServer.listen(port, '127.0.0.1', () => {
-        if (process.env.MCP_DEBUG === 'true') {
-          process.stderr.write(`[WEB-UI] Server started on http://localhost:${port}\n`);
+      const serverHost = host || process.env.WEB_UI_HOST || "127.0.0.1";
+
+      this.httpServer.listen(port, serverHost, () => {
+        if (process.env.MCP_DEBUG === "true") {
+          const displayHost =
+            serverHost === "0.0.0.0" ? "localhost" : serverHost;
+          process.stderr.write(
+            `[WEB-UI] Server started on http://${displayHost}:${port}\n`,
+          );
         }
-        
+
         // 启动 WebSocket
         this.setupWebSocket();
-        
+
         resolve();
       });
 
-      this.httpServer.on('error', (error) => {
+      this.httpServer.on("error", (error) => {
         reject(error);
       });
     });
@@ -346,8 +366,8 @@ export class WebUIServer {
       // 关闭 HTTP 服务器
       if (this.httpServer) {
         this.httpServer.close(() => {
-          if (process.env.MCP_DEBUG === 'true') {
-            process.stderr.write('[WEB-UI] Server stopped\n');
+          if (process.env.MCP_DEBUG === "true") {
+            process.stderr.write("[WEB-UI] Server stopped\n");
           }
           resolve();
         });
@@ -358,4 +378,3 @@ export class WebUIServer {
     });
   }
 }
-
