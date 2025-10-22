@@ -311,6 +311,7 @@ ANIMATION_THROTTLE_MS = "100"
 | `AUTO_START_TERMINAL_UI` | REST 启动时自动启动 Web UI     | true              |
 | `WEB_UI_HOST`            | Web UI 服务器监听地址          | localhost         |
 | `AUTO_OPEN_BROWSER`      | 是否自动打开浏览器访问 Web UI  | false             |
+| `WEB_UI_PORT`             | Web UI 服务器端口              | 3000              |
 
 ### 🚀 自动启动服务器配置
 
@@ -335,6 +336,9 @@ WEB_UI_HOST=0.0.0.0
 
 # REST API 端口（可选）
 REST_PORT=3001
+
+# Web UI 端口（可选）
+WEB_UI_PORT=3000
 
 # 是否自动打开浏览器（可选）
 AUTO_OPEN_BROWSER=false

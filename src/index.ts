@@ -81,6 +81,7 @@ async function main() {
           const uiOptions = {
             autoOpen: autoOpenBrowser,
             host: webUiHost,
+            port: parseInt(process.env.WEB_UI_PORT || "3000"),
             terminalManager: terminalManager,
           };
           const uiResult = await webUiManager.start(uiOptions);
